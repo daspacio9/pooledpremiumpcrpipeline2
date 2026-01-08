@@ -90,8 +90,9 @@ rule consensus_clean:
         """
         if [ -d consensus ]; then
             mkdir -p {params.timestampDir}/consensus
-            mv consensus/*.fastq {params.timestampDir}/consensus/
-            rm -r consensus
+            mkdir -p {params.timestampDir}/consensus_split
+            mv consensus {params.timestampDir}/consensus/
+            mv consensus_split {params.timestampDir}/consensus_split/
         fi
         """
 

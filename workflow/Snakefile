@@ -37,6 +37,7 @@ onerror:
 rule all:
     input:
         ".demux_finished.flag",
+        "consensus/bulk_consensus/consensus.fastq",
         "consensus/consensus_summary.csv",
         ".coverage.done",
         ".plot.done" #flag file,
