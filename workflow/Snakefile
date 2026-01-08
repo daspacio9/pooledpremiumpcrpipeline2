@@ -11,8 +11,11 @@ configfile: "config/config.yaml"
 
 # load rules
 # -----------------------------------------------------
-include: "rules/common.smk"
-include: "rules/process_reads.smk"
+include: "rules/clean.smk"
+include: "rules/prepare_reference.smk"
+include: "rules/consensus.smk"
+include: "rules/demux.smk"
+include: "rules/align.smk"
 
 
 # optional messages, log and error handling
@@ -33,5 +36,8 @@ onerror:
 # -----------------------------------------------------
 rule all:
     input:
-        "results/multiqc/multiqc_report.html",
+        ".demux_finished.flag",
+        "consensus/consensus_summary.csv",
+        ".coverage.done",
+        ".plot.done" #flag file,
     default_target: True

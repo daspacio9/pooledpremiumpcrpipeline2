@@ -1,8 +1,15 @@
-samplesheet: ".test/config/samples.tsv"
+###pipeline configuration
 
-get_genome:
-  ncbi_ftp: https://ftp.ncbi.nlm.nih.gov/genomes/all/GCF/000/146/045/GCF_000146045.2_R64/GCF_000146045.2_R64_genomic.fna.gz
 
-simulate_reads:
-  read_length: 100
-  read_number: 10000
+min_depth: 10
+primer_consensus: cole1-primer-consensus.fasta #placed in ref/
+barcode_groups: cole1-barcode-groups-48.csv #placed in ref/
+barcodes: cole1-barcodes-48.fasta  #placed in ref/
+input_fastq: FR6XCS_2_414-417.fastq.gz #placed in sequences/
+
+
+
+cutadapt_min_overlap: 15 #In cutadapt, the minimum overlap parameter (-O or --overlap) specifies the minimum number of matching bases that must exist between the read and the adapter sequence for the adapter to be considered found. Cutadapt demultiplexes reads where it finds the primer adapter sequences with the listed barcode pairs within the adapter and on the 5' and 3' ends respectively.
+cutadapt_error_rate: 0.1 #In cutadapt, the error rate parameter (-e or --error-rate) specifies the maximum allowed error rate (i.e., the fraction of mismatches) when matching adapters to reads. For the default I use, 0.01, this allows 3 mismatches in the 15 nt minimum overlap and 1.2 mismatches in the 6 nt minimum overlap. This is useful for handling sequencing errors or slight variations in adapter sequences in a 6nt stretch such as the barcode
+
+medaka_model: r1041_e82_400bps_hac_v5.0.0 #model for medaka consensus polishing. This pipeline uses consensus generation so a consensus model is used.
