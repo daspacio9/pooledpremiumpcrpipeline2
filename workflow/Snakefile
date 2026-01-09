@@ -11,6 +11,7 @@ configfile: "config/config.yaml"
 
 # load rules
 # -----------------------------------------------------
+include: "rules/common.smk"
 include: "rules/clean.smk"
 include: "rules/prepare_reference.smk"
 include: "rules/consensus.smk"
@@ -18,14 +19,40 @@ include: "rules/demux.smk"
 include: "rules/align.smk"
 
 
+
 # optional messages, log and error handling
 # -----------------------------------------------------
 onstart:
-    print("\n--- Analysis started ---\n")
+    
+    #print("Available DAG attributes:", dir(workflow.dag))
+    # This removes all .done files from the workflow run before the clean workflow begins
+    #print(workflow.dag.targetjobs)
+    if "clean" in str(workflow.dag.targetjobs):
+        from pathlib import Path
+        from os.path import join, dirname, realpath
 
+        here = os.getcwd()
+        print(here)
+        # 2. Construct the full path pattern
+        search_pattern = join(here,'.*.done')
+        print(f"Searching for .done files with pattern: {search_pattern}")
+
+        files_to_remove = Path(here).glob('.*.done')
+        files_to_remove = [str(f) for f in files_to_remove if f.is_file()]
+        # Remove flag files to force re-run of cleanup
+        if files_to_remove:
+            for f in files_to_remove:
+                os.remove(f)
+        else:
+            print("No .done flag files found to clean up.")
+    else:
+        print("\n--- Analysis started ---\n")
 
 onsuccess:
     print("\n--- Workflow finished! ---\n")
+    print("All steps completed successfully.")
+    print("Run again with arg `--report report/1_report.html` to generate a report.")
+    print("Run again with arg 'clean' to remove intermediate files and move results to a timestamped outputs archive.")
 
 
 onerror:
@@ -36,7 +63,7 @@ onerror:
 # -----------------------------------------------------
 rule all:
     input:
-        ".demux_finished.flag",
+        ".demux_finished.done",
         "consensus/bulk_consensus/consensus.fastq",
         "consensus/consensus_summary.csv",
         ".coverage.done",

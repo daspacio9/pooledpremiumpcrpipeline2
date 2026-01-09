@@ -6,7 +6,7 @@ primer_consensus: cole1-primer-consensus.fasta #placed in ref/
 barcode_groups: cole1-barcode-groups-48.csv #placed in ref/
 barcodes: cole1-barcodes-48.fasta  #placed in ref/
 input_fastq: FR6XCS_2_414-417.fastq.gz #placed in sequences/
-
+medaka_spoa_threads: 8 #consensus jobs are run in n parallel threads in a single commandline call
 
 
 cutadapt_min_overlap: 15 #In cutadapt, the minimum overlap parameter (-O or --overlap) specifies the minimum number of matching bases that must exist between the read and the adapter sequence for the adapter to be considered found. Cutadapt demultiplexes reads where it finds the primer adapter sequences with the listed barcode pairs within the adapter and on the 5' and 3' ends respectively.

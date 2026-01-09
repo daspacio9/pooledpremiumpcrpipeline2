@@ -46,19 +46,6 @@ rule prepare_barcode_reference:
         "../scripts/prepare_barcode-pairs.py"
 
 
-# Function to read adapter (primer) names from the barcode-pairs.txt file. Functions called in input need to be in the snakefile or smk file that uses them.
-# -----------------------------------------------------
-def adapter_names(path):
-    names = []
-    with open(path) as fh:
-        for line in fh:
-            s = line.strip()
-            if not s or s.startswith(("#",";")):
-                continue
-            # take the token after '>'
-            m = s.startswith(">")
-            if m:
-                names.append(s[1:])
-    return names
+
     
 

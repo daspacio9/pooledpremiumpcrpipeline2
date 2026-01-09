@@ -11,31 +11,6 @@
 # ---------------------------------------------------------------------------------
 
 
-# Helper function that determines which files are produced by the split_fastq checkpoint
-# -----------------------------------------------------
-def get_split_coverage(wildcards):
-    # 1. Ensure the checkpoint has finished
-    checkpoint_output = checkpoints.split_fastq.get(**wildcards).output[0]
-    print(checkpoint_output)
-    # 2. List the files that were actually created
-    # This glob_wildcards looks inside the directory produced by the checkpoint
-    filenames = glob_wildcards(os.path.join(checkpoint_output, "{sample}_consensus.fastq")).sample
-    print(filenames)
-    # 3. Return the full paths to the next rule
-    return expand(".coverage_{sample}.done", sample=filenames)
-
-# Helper function that determines which files are produced by the split_fastq checkpoint
-# -----------------------------------------------------
-def get_split_plots(wildcards):
-    # 1. Ensure the checkpoint has finished
-    checkpoint_output = checkpoints.split_fastq.get(**wildcards).output[0]
-    # 2. List the files that were actually created
-    # This glob_wildcards looks inside the directory produced by the checkpoint
-    filenames = glob_wildcards(os.path.join(checkpoint_output, "{sample}_consensus.fastq")).sample
-    print(filenames)
-    # 3. Return the full paths to the next rule
-    return expand(".plot_{sample}.done", sample=filenames)
-
 ### Alignment to the consensus and coverage, consensus match calculation rules and plotting thereof
 # -----------------------------------------------------
 rule aln_to_consensus:
@@ -49,11 +24,10 @@ rule aln_to_consensus:
         bai = "aln/{sample}_aln_sorted.bam.bai",
         cov = "report/{sample}_coverage.txt",
         pileup = "report/{sample}_mpileup.txt",
-        coverage_flag = touch(".coverage_{sample}.done") 
+        coverage_flag = touch("consensus_split/.coverage_{sample}.done") 
     log:
         "logs/aln/{sample}_aln.log"
     shell:
-        # Now use named inputs for clarity and safety!
         r"""
         minimap2 -ax map-ont {input.consensus} {input.reads} > {output.sam} 2>> {log}
         samtools view -bo {output.bam} {output.sam} 2>> {log}
@@ -69,13 +43,13 @@ rule parse_mpileup_ref_match:
         "report/{sample}_mpileup.txt"
     output:
         "report/{sample}_pypileup.tsv"
+    log:
+        "logs/aln/{sample}_parse_mpileup_ref_match.log"
     run:
         import pandas as pd
         from common import parse_mpileup
         df_pileup = parse_mpileup(input[0])
-
         df_pileup.to_csv(output[0], sep='\t', index=False)
-
 
 rule plot_coverage:
     input:
@@ -83,7 +57,9 @@ rule plot_coverage:
     output:
         report("report/{sample}_coverage.pdf", category = "{sample}"), 
         report("report/{sample}_mismatch_freq.pdf", category = "{sample}"),
-        plot_flag = ".plot_{sample}.done", #flag file
+        plot_flag = "consensus_split/.plot_{sample}.done", #flag file
+    log:
+        logf = "logs/aln/{sample}_plot_coverage.log"
     run:
         import pandas as pd
         import matplotlib
@@ -127,18 +103,22 @@ rule plot_coverage:
 
 rule coverage_done:
     input:
-        get_split_coverage
+        lambda wildcards: get_splits(wildcards, prefix=".coverage_", suffix=".done")
     output:
         touch(".coverage.done")
+    log:
+        logf = "logs/aln/coverage_done.log"
     run:
         with open(output[0], "w") as f:
             f.write("Coverage calculation completed.\n")
 
 rule plot_done:
     input:
-        get_split_plots
+        lambda wildcards: get_splits(wildcards, prefix=".plot_", suffix=".done")
     output:
         touch(".plot.done")
+    log:
+        logf = "logs/aln/plot_done.log"
     run:
         with open(output[0], "w") as f:
             f.write("Coverage plotting completed.\n")

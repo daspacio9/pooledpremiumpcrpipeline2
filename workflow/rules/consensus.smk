@@ -10,44 +10,30 @@
 #
 # ---------------------------------------------------------------------------------
 
-
-
-# Function to get passed samples after demux checkpoint is complete
-# -----------------------------------------------------
-def get_passed_samples(wildcards): #wildcards is required argument for all snakemake dynamic input/output objects to be accessed in the function
-# This function reads the demux_stats.csv file to get samples that passed the depth filter
-    passed_samples = []
-    demux_stats_file = checkpoints.demux_stats.get().output[0] # get the output file of the checkpoint
-    with open(demux_stats_file) as f:
-        next(f)  # skip header
-        for line in f:
-            sample, n_reads = line.strip().split(",")
-            if sample != "unknown" and int(n_reads) >= config["min_depth"]:
-                passed_samples.append(sample)
-    return passed_samples
-
-
 ### Subread classification and consensus generation rules
 # Classify reads in fastq to subreads following the required formatting by medaka smolecule package
 # -----------------------------------------------------
 rule fastq_to_fastq_subreads:
     input:
-        "demux/{sample}.fastq.gz"
+        inf = "demux/{sample}.fastq.gz"
     output:
-        "demux/temp/{sample}_subreads_batch.fastq.gz"
+        outf = "demux/temp/{sample}_subreads_batch.fastq.gz"
+    log:
+        logf = "logs/consensus/{sample}_fastq_to_fastq_subreads.log"
     run:
         from Bio import SeqIO
         import gzip
         records = []
-        with gzip.open(input[0], "rt") as fin:
+        with gzip.open(input.inf, "rt") as fin:
             for i, record in enumerate(SeqIO.parse(fin, "fastq")):
                 rec_id = f"{wildcards.sample}_subread{i+1}"
                 record.id = rec_id
                 record.description = ""
                 records.append(record)
-        with open(output[0], "w") as fout:
+        with open(output.outf, "w") as fout:
             SeqIO.write(records, fout, "fastq")
-        
+        with open(log.logf, "w") as logf:
+            logf.write("Demux stats prepared at {output.outf}\n")
 
 
 # Rule to generate consensus sequences using Medaka from subreads
@@ -62,21 +48,24 @@ rule medaka_consensus_from_subreads:
         consensus = "consensus/bulk_consensus/consensus.fastq"
     log:
         "logs/consensus/bulk_consensus.log"
+    params:
+        min_depth = config["min_depth"],
+        medaka_model = config["medaka_model"]
     threads: config["medaka_spoa_threads"]
     shell:
         r"""
-        rm -rf {output.outDir}
+        rm -rf {output.outDir} >> {log} 2>&1
         medaka smolecule \
             {output.outDir} \
             {input.fastas} \
             --method spoa \
             --threads {threads} \
-            --depth {config[min_depth]} \
+            --depth {params.min_depth} \
             --qualities \
             --batch_size 20 \
-            --model {config[medaka_model]} \
-            --spoa_min_coverage {config[min_depth]} \
-        > {log} 2>&1
+            --model {params.medaka_model} \
+            --spoa_min_coverage {params.min_depth} \
+        >> {log} 2>&1
         """
 
 split_dir = "consensus_split"
@@ -84,53 +73,48 @@ split_dir = "consensus_split"
 # -----------------------------------------------------
 checkpoint split_fastq:
     input:
-        "consensus/bulk_consensus/consensus.fastq"
+        batchconsensus = "consensus/bulk_consensus/consensus.fastq"
     output:
         out_dir = directory(split_dir)
+    log: 
+        logf = "logs/consensus/split_fastq.log"
     run:
         import os
         from pathlib import Path
         from Bio import SeqIO # Requires biopython
         Path(output.out_dir).mkdir(parents=True, exist_ok=True)
-        
-        with open(input[0], "r") as handle:
+        with open(input.batchconsensus, "r") as handle:
             for record in SeqIO.parse(handle, "fastq"):
                 # Clean up the ID: Benchling doesn't like special chars in names
                 # We strip common sequencer chars like ':' or '/'
                 clean_name = record.id.split("_")[0] + "_consensus"
-                print(clean_name)
                 file_path = os.path.join(output.out_dir, f"{clean_name}.fastq")
+
+                
+                with open(log.logf, "w") as logf:
+                    logf.write(f"Writing consensus for sample {clean_name}\n")
+                    logf.write(f"to file {file_path}\n")
                 with open(file_path, "w") as out_f:
                     SeqIO.write(record, out_f, "fastq")
-
-
-# Helper function that determines which files are produced by the split_fastq checkpoint
-# -----------------------------------------------------
-def get_split_files(wildcards):
-    # 1. Ensure the checkpoint has finished
-    checkpoint_output = checkpoints.split_fastq.get(**wildcards).output[0]
-    # 2. List the files that were actually created
-    # This glob_wildcards looks inside the directory produced by the checkpoint
-    filenames = glob_wildcards(os.path.join(checkpoint_output, "{sample}_consensus.fastq")).sample
-    print(filenames)
-    # 3. Return the full paths to the next rule
-    return expand(os.path.join(checkpoint_output, "{sample}_consensus.fastq"), sample=filenames)
-
 
 # Rule to create a summary CSV with sample, sequence, and quality score columns from all consensus FASTA files
 # -----------------------------------------------------
 rule consensus_summary_csv:
     input:
-        consensuses = get_split_files
+        # consensuses = get_split_files
+        consensuses = lambda wildcards: get_splits(wildcards, prefix="", suffix="_consensus.fastq")
     output:
-        report("consensus/consensus_summary.csv", category = "consensus")
+        outf = report("consensus/consensus_summary.csv", category = "consensus")
+    log: 
+        logf = "logs/consensus/consensus_summary_csv.log"
     run:
         import csv
         from Bio import SeqIO
-        with open(output[0], "w", newline="") as csvfile:
+        with open(output.outf, "w", newline="") as csvfile:
             writer = csv.writer(csvfile)
             writer.writerow(["sample", "sequence", "qscore"])
-            print(input)
+            with open(log.logf, "w") as logf:
+                logf.write("Generating consensus summary CSV for {}\n".format(input.consensuses))
             for fastq_path in input.consensuses:
                 sample = os.path.basename(fastq_path).replace("_consensus.fastq", "")
                 for record in SeqIO.parse(fastq_path, "fastq"):
