@@ -1,0 +1,11 @@
+[M::mm_idx_gen::0.003*0.91] collected minimizers
+[M::mm_idx_gen::0.004*0.75] sorted minimizers
+[M::main::0.004*0.76] loaded/built the index for 1 target sequence(s)
+[M::mm_mapopt_update::0.004*0.76] mid_occ = 10
+[M::mm_idx_stat] kmer size: 15; skip: 10; is_hpc: 0; #seq: 1
+[M::mm_idx_stat::0.004*0.77] distinct minimizers: 1969 (100.00% are singletons); average occurrences: 1.000; average spacing: 5.271; total length: 10379
+[M::worker_pipeline::0.039*2.29] mapped 25 sequences
+[M::main] Version: 2.30-r1287
+[M::main] CMD: minimap2 -ax map-ont consensus_split/cole1-group-F1_consensus.fastq demux/cole1-group-F1.fastq.gz
+[M::main] Real time: 0.040 sec; CPU: 0.091 sec; Peak RSS: 0.006 GB
+[mpileup] 1 samples in 1 input files

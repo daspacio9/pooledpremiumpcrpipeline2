@@ -1,0 +1,46 @@
+[11:58:02 - Smolecule] Given 20 input files, assuming one read per file.
+[11:58:02 - Smolecule] Running spoa pre-medaka consensus for all reads.
+Namespace(command='smolecule', log_level=20, batch_size=20, chunk_len=1000, chunk_ovlp=500, model='/home/daspacio/miniforge3/envs/pppp/lib/python3.12/site-packages/medaka/data/r1041_e82_400bps_hac_v5.0.0_model_pt.tar.gz', min_depth=0, output='consensus/bulk_consensus', fasta=['demux/temp/cole1-group-A1_subreads_batch.fastq.gz', 'demux/temp/cole1-group-C1_subreads_batch.fastq.gz', 'demux/temp/cole1-group-F1_subreads_batch.fastq.gz', 'demux/temp/cole1-group-A2_subreads_batch.fastq.gz', 'demux/temp/cole1-group-C2_subreads_batch.fastq.gz', 'demux/temp/cole1-group-D2_subreads_batch.fastq.gz', 'demux/temp/cole1-group-F2_subreads_batch.fastq.gz', 'demux/temp/cole1-group-A3_subreads_batch.fastq.gz', 'demux/temp/cole1-group-B3_subreads_batch.fastq.gz', 'demux/temp/cole1-group-C3_subreads_batch.fastq.gz', 'demux/temp/cole1-group-D3_subreads_batch.fastq.gz', 'demux/temp/cole1-group-F3_subreads_batch.fastq.gz', 'demux/temp/cole1-group-A4_subreads_batch.fastq.gz', 'demux/temp/cole1-group-C4_subreads_batch.fastq.gz', 'demux/temp/cole1-group-D4_subreads_batch.fastq.gz', 'demux/temp/cole1-group-F4_subreads_batch.fastq.gz', 'demux/temp/cole1-group-A5_subreads_batch.fastq.gz', 'demux/temp/cole1-group-C5_subreads_batch.fastq.gz', 'demux/temp/cole1-group-D5_subreads_batch.fastq.gz', 'demux/temp/cole1-group-F5_subreads_batch.fastq.gz'], method='spoa', spoa_min_coverage=10, depth=10, length=400, threads=4, check_output=False, save_features=False, qualities=True, func=<function main at 0x7bb5a0be8e00>, model_was_given=True)
+[12:01:22 - POAManager] Created 20 consensus with 20 alignments.
+[12:01:22 - Smolecule] Writing medaka input bam for 20 reads.
+[12:01:22 - Smolecule] Running medaka consensus.
+[12:01:22 - Predict] Processing region(s): cole1-group-A1_subreads_batch.fastq:0-10378 cole1-group-C1_subreads_batch.fastq:0-10379 cole1-group-F1_subreads_batch.fastq:0-10379 cole1-group-A2_subreads_batch.fastq:0-10379 cole1-group-C2_subreads_batch.fastq:0-10378 cole1-group-D2_subreads_batch.fastq:0-9978 cole1-group-F2_subreads_batch.fastq:0-10379 cole1-group-A3_subreads_batch.fastq:0-10379 cole1-group-B3_subreads_batch.fastq:0-10377 cole1-group-C3_subreads_batch.fastq:0-10379 cole1-group-D3_subreads_batch.fastq:0-10378 cole1-group-F3_subreads_batch.fastq:0-10379 cole1-group-A4_subreads_batch.fastq:0-10378 cole1-group-C4_subreads_batch.fastq:0-10379 cole1-group-D4_subreads_batch.fastq:0-10334 cole1-group-F4_subreads_batch.fastq:0-10378 cole1-group-A5_subreads_batch.fastq:0-10378 cole1-group-C5_subreads_batch.fastq:0-10378 cole1-group-D5_subreads_batch.fastq:0-10379 cole1-group-F5_subreads_batch.fastq:0-10312
+[12:01:22 - Predict] Using model: /home/daspacio/miniforge3/envs/pppp/lib/python3.12/site-packages/medaka/data/r1041_e82_400bps_hac_v5.0.0_model_pt.tar.gz.
+[12:01:22 - Predict] Using minimum mapQ threshold of 1 for read filtering.
+[12:01:22 - MdlStrTGZ] Model GRUModel(
+  (gru): GRU(10, 128, num_layers=2, batch_first=True, bidirectional=True)
+  (linear): Linear(in_features=256, out_features=5, bias=True)
+)
+[12:01:22 - MdlStrTGZ] loading weights from /tmp/tmpfojg6ku0/model/weights.pt
+[12:01:22 - MdlStrTGZ] Successfully removed temporary files from /tmp/tmpfojg6ku0.
+[12:01:22 - Predict] Model device: cpu
+[12:01:22 - Predict] Running prediction at full precision
+[12:01:22 - Predict] Processing 20 long region(s) with batching.
+[12:01:22 - PWorker] Running inference for 0.2M draft bases.
+[12:01:31 - PWorker] Processed 22 batches
+[12:01:31 - PWorker] All done, 0 remainder regions.
+[12:01:31 - Predict] Finished processing all regions.
+[12:01:31 - Smolecule] Running medaka stitch.
+[12:01:31 - DataIndx] Loaded 1/1 (100.00%) sample files.
+[12:01:31 - DataIndx] Loaded 1/1 (100.00%) sample files.
+[12:01:31 - DataIndx] Loaded 1/1 (100.00%) sample files.
+[12:01:31 - DataIndx] Loaded 1/1 (100.00%) sample files.
+[12:01:31 - DataIndx] Loaded 1/1 (100.00%) sample files.
+[12:01:31 - DataIndx] Loaded 1/1 (100.00%) sample files.
+[12:01:31 - DataIndx] Loaded 1/1 (100.00%) sample files.
+[12:01:31 - DataIndx] Loaded 1/1 (100.00%) sample files.
+[12:01:31 - DataIndx] Loaded 1/1 (100.00%) sample files.
+[12:01:31 - DataIndx] Loaded 1/1 (100.00%) sample files.
+[12:01:31 - DataIndx] Loaded 1/1 (100.00%) sample files.
+[12:01:31 - DataIndx] Loaded 1/1 (100.00%) sample files.
+[12:01:31 - DataIndx] Loaded 1/1 (100.00%) sample files.
+[12:01:31 - DataIndx] Loaded 1/1 (100.00%) sample files.
+[12:01:31 - DataIndx] Loaded 1/1 (100.00%) sample files.
+[12:01:31 - DataIndx] Loaded 1/1 (100.00%) sample files.
+[12:01:31 - DataIndx] Loaded 1/1 (100.00%) sample files.
+[12:01:31 - DataIndx] Loaded 1/1 (100.00%) sample files.
+[12:01:31 - DataIndx] Loaded 1/1 (100.00%) sample files.
+[12:01:31 - DataIndx] Loaded 1/1 (100.00%) sample files.
+[12:01:31 - DataIndx] Loaded 1/1 (100.00%) sample files.
+[12:01:31 - Smolecule] Single-molecule consensus sequences written to consensus/bulk_consensus/consensus.fastq.
+[12:01:31 - Smolecule] POA time: 193s, medaka time: 9s
