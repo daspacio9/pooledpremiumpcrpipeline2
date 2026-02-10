@@ -35,9 +35,11 @@ onstart:
         print(here)
         # 2. Construct the full path pattern
         search_pattern = join(here,'.*.done')
-        print(f"Searching for .done files with pattern: {search_pattern}")
+        search_pattern2 = join(here,'consensus_split/.*.done')
+        print(f"Searching for .done files with pattern: {search_pattern} and {search_pattern2}")
 
         files_to_remove = Path(here).glob('.*.done')
+        files_to_remove = list(files_to_remove) + list(Path(here).glob('consensus_split/.*.done'))
         files_to_remove = [str(f) for f in files_to_remove if f.is_file()]
         # Remove flag files to force re-run of cleanup
         if files_to_remove:

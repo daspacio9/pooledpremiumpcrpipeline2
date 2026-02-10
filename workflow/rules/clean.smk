@@ -20,15 +20,13 @@ localrules: make_pppp_output_dir, alignment_clean, demux_clean, consensus_clean,
 
 config['timestamp'] = datetime.now().strftime("%Y_%m_%d-%H%M%S")
     
-
-    
 # clean up sequences folder: remove combined .fastq.gz files (but not basecalled batches), move UMI stats files
 # -----------------------------------------------------
 rule make_pppp_output_dir:
     output:
         touch('.make_pppp_output_dir.done')   # changed: consistent touch filename
     log:
-        "logs/clean/make_pppp_output_dir.log"
+        "cleanlogs/make_pppp_output_dir.log"
     params:
         timestampDir = lambda wildcards: config['timestamp'] + '-ppppOutputs'
     shell:
@@ -39,10 +37,12 @@ rule make_pppp_output_dir:
 # clean up compute batches alignment
 # -----------------------------------------------------
 rule alignment_clean:
+    input:
+        rules.make_pppp_output_dir.output
     output:
         touch('.alignment_clean.done')
     log:
-        "logs/clean/alignment_clean.log"
+        "cleanlogs/alignment_clean.log"
     shell:
         """
         if [ -d aln ]; then
@@ -53,10 +53,12 @@ rule alignment_clean:
 # clean up compute batches demux
 # -----------------------------------------------------
 rule demux_clean:
+    input:
+        rules.make_pppp_output_dir.output
     output:
         touch('.demux_clean.done')
     log:
-        "logs/clean/demux_clean.log"
+        "cleanlogs/demux_clean.log"
     params:
         timestampDir = lambda wildcards: config['timestamp'] + '-ppppOutputs'
     shell:
@@ -69,10 +71,12 @@ rule demux_clean:
 # clean up consensus outputs
 # -----------------------------------------------------
 rule consensus_clean:
+    input:
+        rules.make_pppp_output_dir.output
     output:
         touch('.consensus_clean.done')
     log:
-        "logs/clean/consensus_clean.log"
+        "cleanlogs/consensus_clean.log"
     params:
         timestampDir = lambda wildcards: config['timestamp'] + '-ppppOutputs'
     shell:
@@ -88,38 +92,41 @@ rule consensus_clean:
 # clean up logs  rm -r {params.timestampDir}/consensus_split/.*.done
 # -----------------------------------------------------
 rule logs_clean:
+    input:
+        rules.make_pppp_output_dir.output
     output:
         touch('.logs_clean.done')
     params:
         timestampDir = lambda wildcards: config['timestamp'] + '-ppppOutputs'
-    log:
-        "logs/clean/logs_clean.log"
     shell:
         """
         if [ -d logs ]; then
-            mkdir -p {params.timestampDir}/logs >> {log} 2>&1
-            mv logs {params.timestampDir}/ >> {log} 2>&1
+            mkdir -p {params.timestampDir}/logs
+            mv logs {params.timestampDir}/
         fi
-        cp config/*.yaml {params.timestampDir}/ >> {log} 2>&1
-        cp -r ref {params.timestampDir}/ >> {log} 2>&1
+        mkdir -p {params.timestampDir}/config
+        cp config/*.yaml {params.timestampDir}/config/
+        cp -r ref {params.timestampDir}/ref/
         """
 
 # clean up reports
 # -----------------------------------------------------
 rule report_clean:
+    input:
+        rules.make_pppp_output_dir.output
     output:
         touch('.report_clean.done')
     params:
         timestampDir = lambda wildcards: config['timestamp'] + '-ppppOutputs'
     log:
-        "logs/clean/report_clean.log"
+        "cleanlogs/report_clean.log"
     shell:
         """
         if [ -d report ]; then
-            mv report {params.timestampDir} >> {log} 2>&1
+            mv report {params.timestampDir}/report/ >> {log} 2>&1
         fi
         if [ -f demux_stats.csv ]; then
-            mv demux_stats.csv {params.timestampDir} >> {log} 2>&1
+            mv demux_stats.csv {params.timestampDir}/ >> {log} 2>&1
         fi
         """
 # clean up intermediate files
@@ -134,10 +141,11 @@ rule clean:
         rules.report_clean.output
     params:
         timestampDir = lambda wildcards: config['timestamp'] + '-ppppOutputs'
-    log:
-        "logs/clean/clean.log"
     shell:
         """
         rm {input}
-        zip -r -m {params.timestampDir}.zip {params.timestampDir} >> {log} 2>&1
+        if [ -d cleanlogs ]; then
+            mv cleanlogs {params.timestampDir}
+        fi
+        zip -r -m {params.timestampDir}.zip {params.timestampDir}
         """

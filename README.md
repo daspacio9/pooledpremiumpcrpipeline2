@@ -5,7 +5,7 @@
 [![run with conda](http://img.shields.io/badge/run%20with-conda-3EB049?labelColor=000000&logo=anaconda)](https://docs.conda.io/en/latest/)
 [![workflow catalog](https://img.shields.io/badge/Snakemake%20workflow%20catalog-darkgreen)](https://snakemake.github.io/snakemake-workflow-catalog/docs/workflows/<owner>/<repo>)
 
-A Snakemake workflow for `<description>`
+A Snakemake workflow for `demultiplex and consensus sequence generation after pooling barcoded samples for the plasmidsaurus premium pcr service`
 
 - [Snakemake workflow: `pooledpremiumpcrpipeline2`](#snakemake-workflow-name)
   - [Usage](#usage)
@@ -34,20 +34,13 @@ Adjust options in the default config file `config/config.yaml`.
 Before running the complete workflow, you can perform a dry run using:
 
 ```bash
-snakemake --dry-run
+snakemake -n
 ```
 
 To run the workflow with test files using **conda**:
 
 ```bash
 snakemake --cores 2 --sdm conda --directory .test
-```
-
-To run the workflow with **apptainer** / **singularity**, add a link to a container registry in the `Snakefile`, for example `container: "oras://ghcr.io/<user>/<repository>:<version>"` for Github's container registry.
-Run the workflow with:
-
-```bash
-snakemake --cores 2 --sdm conda apptainer --directory .test
 ```
 
 ## Authors
