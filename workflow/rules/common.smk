@@ -18,7 +18,13 @@ def get_moved_files(wildcards):
     # Return the expected paths in the final destination
     return [os.path.join("demux/.low_depth", f) for f in os.listdir(checkpoint_output) if not f.startswith('.')]
 
-
+# Function that overrides the default reference file for debugging
+# -----------------------------------------------------
+def use_debug():
+    if config["debug"]:
+        return "ref/barcode-pairs_debug.txt"
+    else:
+        return "ref/barcode-pairs.txt"
 
 # Function to get passed samples after demux checkpoint is complete
 # -----------------------------------------------------

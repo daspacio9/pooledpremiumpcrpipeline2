@@ -15,11 +15,11 @@
 # -----------------------------------------------------
 rule cutadapt_demux_linked:
     input:
-        barcodes = "ref/barcode-pairs.txt",
+        barcodes = use_debug(),
         seq= f"sequences/{config['input_fastq']}"
     output:
         # all per-sample fastqs + an explicit file for unmatched
-        demux=expand("demux/{s}.fastq.gz", s=adapter_names("ref/barcode-pairs.txt")),
+        demux=expand("demux/{s}.fastq.gz", s=adapter_names(use_debug())),
         unknown="demux/unknown.fastq.gz"
     params:
         error_rate = config['cutadapt_error_rate'],
@@ -44,7 +44,7 @@ rule cutadapt_demux_linked:
 # -----------------------------------------------------
 checkpoint demux_stats:
     input:
-        samplefiles = expand("demux/{s}.fastq.gz", s=adapter_names("ref/barcode-pairs.txt")),
+        samplefiles = expand("demux/{s}.fastq.gz", s=adapter_names(use_debug())),
         unkfiles = "demux/unknown.fastq.gz"
     output:
         report("demux_stats.csv", category = "demux", labels={"type": "stats", "status": "Unfiltered"})
