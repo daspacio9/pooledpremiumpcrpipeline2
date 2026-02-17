@@ -238,21 +238,13 @@ def generate_trace(df, seq):
         val_peak = 1000
         val_side = 0
         
-        # Scale the peak value by the normalized base count for that position and base
-        a[peak_idx] = int(val_peak * df["A"][i])
-        g[peak_idx] = int(val_peak * df["G"][i])
-        c[peak_idx] = int(val_peak * df["C"][i])
-        t[peak_idx] = int(val_peak * df["T"][i])
-
-        a[peak_idx+1] = int(val_peak * df["A"][i])
-        g[peak_idx+1] = int(val_peak * df["G"][i])
-        c[peak_idx+1] = int(val_peak * df["C"][i])
-        t[peak_idx+1] = int(val_peak * df["T"][i])
+       # Set peak values at peak_idx and one point to the right scaled by base counts
+        a[peak_idx] = a[peak_idx+1] = int(val_peak * df["A"][i])
+        g[peak_idx] = g[peak_idx+1] = int(val_peak * df["G"][i])
+        c[peak_idx] = c[peak_idx+1] = int(val_peak * df["C"][i])
+        t[peak_idx] = t[peak_idx+1] = int(val_peak * df["T"][i])
         
-        a[peak_idx-1] = a[peak_idx+1] = val_side
-        g[peak_idx-1] = g[peak_idx+1] = val_side
-        c[peak_idx-1] = c[peak_idx+1] = val_side
-        t[peak_idx-1] = t[peak_idx+1] = val_side
+        a[peak_idx-1] = g[peak_idx-1] = c[peak_idx-1] = t[peak_idx-1] = val_side
     return {'G': g, 'A': a, 'T': t, 'C': c}
 # 3. Write
 #write_ab1("generated_from_scratch.ab1", test_seq, g, a, t, c)

@@ -129,6 +129,22 @@ rule report_clean:
             mv demux_stats.csv {params.timestampDir}/ >> {log} 2>&1
         fi
         """
+rule ab1_clean:
+    input:
+        rules.make_pppp_output_dir.output
+    output:
+        touch('.ab1_clean.done')
+    params:
+        timestampDir = lambda wildcards: config['timestamp'] + '-ppppOutputs'
+    log:
+        "cleanlogs/ab1_clean.log"
+    shell:
+        """
+        if [ -d ab1 ]; then
+            mkdir -p {params.timestampDir}/ab1 >> {log} 2>&1
+            mv ab1/* {params.timestampDir}/ab1/ >> {log} 2>&1
+        fi
+        """
 # clean up intermediate files
 # -----------------------------------------------------
 rule clean:
@@ -138,7 +154,8 @@ rule clean:
         rules.demux_clean.output,
         rules.consensus_clean.output,
         rules.logs_clean.output,              
-        rules.report_clean.output
+        rules.report_clean.output,
+        rules.ab1_clean.output
     params:
         timestampDir = lambda wildcards: config['timestamp'] + '-ppppOutputs'
     shell:
