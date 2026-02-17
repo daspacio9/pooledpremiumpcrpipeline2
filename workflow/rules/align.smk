@@ -15,7 +15,7 @@
 # -----------------------------------------------------
 rule aln_to_consensus:
     input:
-        consensus = "consensus_split/{sample}_consensus.fastq",
+        consensus = lambda wildcards: get_splits(wildcards, prefix="", suffix="_consensus.fastq")[0],
         reads = "demux/{sample}.fastq.gz"
     output:
         sam = "aln/{sample}_aln.sam",
@@ -24,7 +24,7 @@ rule aln_to_consensus:
         bai = "aln/{sample}_aln_sorted.bam.bai",
         cov = "report/{sample}_coverage.txt",
         pileup = "report/{sample}_mpileup.txt",
-        coverage_flag = touch("consensus_split/.coverage_{sample}.done") 
+        coverage_flag = touch(".coverage_{sample}.done") 
     log:
         "logs/aln/{sample}_aln.log"
     shell:
@@ -57,7 +57,7 @@ rule plot_coverage:
     output:
         report("report/{sample}_coverage.pdf", category = "{sample}"), 
         report("report/{sample}_mismatch_freq.pdf", category = "{sample}"),
-        plot_flag = "consensus_split/.plot_{sample}.done", #flag file
+        plot_flag = ".plot_{sample}.done", #flag file
     log:
         logf = "logs/aln/{sample}_plot_coverage.log"
     run:
@@ -103,7 +103,7 @@ rule plot_coverage:
 
 rule coverage_done:
     input:
-        lambda wildcards: get_splits(wildcards, prefix=".coverage_", suffix=".done")
+        lambda wildcards: expand(".coverage_{sample}.done", sample=get_passed_samples(wildcards))
     output:
         touch(".coverage.done")
     log:
@@ -114,7 +114,7 @@ rule coverage_done:
 
 rule plot_done:
     input:
-        lambda wildcards: get_splits(wildcards, prefix=".plot_", suffix=".done")
+        lambda wildcards: expand(".plot_{sample}.done", sample=get_passed_samples(wildcards))
     output:
         touch(".plot.done")
     log:

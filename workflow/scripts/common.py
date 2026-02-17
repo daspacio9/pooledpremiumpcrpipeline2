@@ -220,7 +220,7 @@ def parse_pypileup(file_path, cols = ['A', 'C', 'G', 'T']):
 
     # Update the columns in place
     df_norm = (df_filtered / subset_max)
-    print(df_norm[0:6])
+    #print(df_norm[0:6])
     dfmax = df_filtered.idxmax(axis=1)
     cons_seq = "".join(dfmax.astype(str)).strip()
     return df_norm, cons_seq
@@ -243,11 +243,16 @@ def generate_trace(df, seq):
         g[peak_idx] = int(val_peak * df["G"][i])
         c[peak_idx] = int(val_peak * df["C"][i])
         t[peak_idx] = int(val_peak * df["T"][i])
+
+        a[peak_idx+1] = int(val_peak * df["A"][i])
+        g[peak_idx+1] = int(val_peak * df["G"][i])
+        c[peak_idx+1] = int(val_peak * df["C"][i])
+        t[peak_idx+1] = int(val_peak * df["T"][i])
         
         a[peak_idx-1] = a[peak_idx+1] = val_side
         g[peak_idx-1] = g[peak_idx+1] = val_side
         c[peak_idx-1] = c[peak_idx+1] = val_side
         t[peak_idx-1] = t[peak_idx+1] = val_side
-
+    return {'G': g, 'A': a, 'T': t, 'C': c}
 # 3. Write
 #write_ab1("generated_from_scratch.ab1", test_seq, g, a, t, c)

@@ -71,5 +71,5 @@ rule all:
         "consensus/consensus_summary.csv",
         ".coverage.done",
         ".plot.done", #flag file
-        get_all_ab1_files
+        ".ab1_done.done"
     default_target: True

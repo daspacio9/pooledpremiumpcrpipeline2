@@ -18,61 +18,50 @@ checkpoint chunk_pypileup:
         chunk_flag = touch("report/.chunks_{sample}.done")
     log:
         "logs/aln/{sample}_chunk_pypileup.log"
+    params:
+        chunk_size = 5000
     run:
         import pandas as pd
         import os
         
-        # Read the pypileup file
         df = pd.read_csv(input[0], sep='\t')
-        
-        # Create chunks directory if it doesn't exist
-        chunks_dir = os.path.join(os.path.dirname(input[0]), "chunks")
+        chunk_size = params.chunk_size
+        chunks_dir = "report/pileup_chunks"
         os.makedirs(chunks_dir, exist_ok=True)
         
-        # Split into chunks of 5000 rows
-        chunk_size = 5000
+        num_chunks = 0
         for i, chunk_start in enumerate(range(0, len(df), chunk_size)):
             chunk_end = min(chunk_start + chunk_size, len(df))
             df_chunk = df.iloc[chunk_start:chunk_end]
-            
-            # Output chunk file
             chunk_file = f"{chunks_dir}/{wildcards.sample}_pypileup_chunk_{i}.tsv"
             df_chunk.to_csv(chunk_file, sep='\t', index=False)
+            num_chunks = i + 1
         
         with open(log[0], 'w') as f:
-            f.write(f"Chunked {wildcards.sample} pypileup into {i+1} chunks of {chunk_size} rows\n")
+            f.write(f"Chunked {wildcards.sample} pypileup into {num_chunks} chunks\n")
 
 
-### Chunking the pypileup file for the ab1 writer
-# -----------------------------------------------------
 rule write_ab1:
     input:
         chunk_flag = "report/.chunks_{sample}.done",
-        chunks = "report/pileup_chunks/{sample}_pypileup_chunk_{chunk}.tsv"
+        chunk_file = "report/pileup_chunks/{sample}_pypileup_chunk_{chunk}.tsv"
     output:
-        flag = touch("ab1/.ab1_{sample}_{chunk}.done"), #flag file to indicate this chunk is done,
+        flag = touch("ab1/.ab1_{sample}_{chunk}.done"),
         ab1_file = "ab1/{sample}_{chunk}.ab1"
     log:
         "logs/ab1writer/{sample}_{chunk}_write_ab1.log"
     run:
-        import pandas as pd
-        from common import write_ab1
-        from common import generate_trace
+        from common import write_ab1, generate_trace, parse_pypileup
         
-        # Read each chunk
-        for chunk_file in input.chunks:
-            if os.path.exists(chunk_file):
-                base_counts, seq = generate_trace(chunk_file)
-                write_ab1(output.ab1_file, seq, base_counts['G'], base_counts['A'], base_counts['T'], base_counts['C'])
-                with open(log[0], 'w') as f:
-                    f.write(f"Wrote AB1 file for {wildcards.sample}_{wildcards.chunk} with {len(seq)} bases\n")
-
+        df_norm, cons_seq = parse_pypileup(input.chunk_file)
+        base_counts = generate_trace(df_norm, cons_seq)
+        write_ab1(output.ab1_file, cons_seq, base_counts['G'], base_counts['A'], base_counts['T'], base_counts['C'])
 
 rule ab1_done:
     input:
-        lambda wildcards: get_splits(wildcards, prefix=".ab1_", suffix=".done")
+        ab1_files = lambda wildcards: get_all_ab1_files(wildcards)
     output:
-        touch(".ab1.done")
+        touch(".ab1_done.done")
     log:
         logf = "logs/aln/ab1_done.log"
     run:

@@ -83,15 +83,13 @@ def get_splits(wildcards, prefix= '', suffix = ''):
 
 # Helper to get all ab1 files for all passed samples and all chunks
 def get_all_ab1_files(wildcards):
-    import glob
     ab1_files = []
+    # Iterate through passed samples and glob their chunks
     for sample in get_passed_samples(wildcards):
-        # Find all chunk files for this sample
-        chunk_pattern = f"report/chunks/{sample}_pypileup_chunk_*.tsv"
-        chunk_files = glob.glob(chunk_pattern)
-        for chunk_file in chunk_files:
-            chunk_id = chunk_file.split('_chunk_')[-1].replace('.tsv', '')
-            ab1_files.append(f"ab1/{sample}_{chunk_id}.ab1")
+        # Wait for this sample's checkpoint to complete
+        checkpoints.chunk_pypileup.get(sample=sample).output[0]
+        # Glob all chunks for this sample
+        g_chunks = glob_wildcards(f"report/pileup_chunks/{sample}_pypileup_chunk_{{chunk}}.tsv")
+        for chunk in g_chunks.chunk:
+            ab1_files.append(f"ab1/.ab1_{sample}_{chunk}.done")
     return ab1_files
-
-
