@@ -141,8 +141,7 @@ rule ab1_clean:
     shell:
         """
         if [ -d ab1 ]; then
-            mkdir -p {params.timestampDir}/ab1 >> {log} 2>&1
-            mv ab1/* {params.timestampDir}/ab1/ >> {log} 2>&1
+            mv ab1/ {params.timestampDir}/ >> {log} 2>&1
         fi
         """
 # clean up intermediate files
