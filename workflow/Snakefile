@@ -17,6 +17,7 @@ include: "rules/prepare_reference.smk"
 include: "rules/consensus.smk"
 include: "rules/demux.smk"
 include: "rules/align.smk"
+include: "rules/ab1writer.smk"
 
 
 
@@ -69,5 +70,6 @@ rule all:
         "consensus/bulk_consensus/consensus.fastq",
         "consensus/consensus_summary.csv",
         ".coverage.done",
-        ".plot.done" #flag file,
+        ".plot.done", #flag file
+        get_all_ab1_files
     default_target: True

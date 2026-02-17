@@ -1,3 +1,16 @@
+# Helper to get all ab1 files for all passed samples and all chunks using the chunk_pypileup checkpoint
+def get_all_ab1_files(wildcards):
+    ab1_files = []
+    # Get all samples that passed
+    for sample in get_passed_samples(wildcards):
+        # Use the chunk_pypileup checkpoint to get the output directory
+        chunk_dir = os.path.join("report", "chunks")
+        import glob
+        chunk_files = glob.glob(os.path.join(chunk_dir, f"{sample}_pypileup_chunk_*.tsv"))
+        for chunk_file in chunk_files:
+            chunk_id = os.path.basename(chunk_file).split('_chunk_')[-1].replace('.tsv', '')
+            ab1_files.append(f"ab1/{sample}_{chunk_id}.ab1")
+    return ab1_files
 # \HEADER\-------------------------------------------------------------------------
 #
 #  CONTENTS      : Snakemake nanopore data pipeline
@@ -67,3 +80,18 @@ def get_splits(wildcards, prefix= '', suffix = ''):
     #print(filenames)
     # 3. Return the full paths to the next rule
     return expand(os.path.join(checkpoint_output, f"{prefix}{{sample}}{suffix}"), sample=filenames)
+
+# Helper to get all ab1 files for all passed samples and all chunks
+def get_all_ab1_files(wildcards):
+    import glob
+    ab1_files = []
+    for sample in get_passed_samples(wildcards):
+        # Find all chunk files for this sample
+        chunk_pattern = f"report/chunks/{sample}_pypileup_chunk_*.tsv"
+        chunk_files = glob.glob(chunk_pattern)
+        for chunk_file in chunk_files:
+            chunk_id = chunk_file.split('_chunk_')[-1].replace('.tsv', '')
+            ab1_files.append(f"ab1/{sample}_{chunk_id}.ab1")
+    return ab1_files
+
+
