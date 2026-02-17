@@ -15,7 +15,7 @@
 # -----------------------------------------------------
 rule aln_to_consensus:
     input:
-        consensus = lambda wildcards: get_splits(wildcards, prefix="", suffix="_consensus.fastq")[0],
+        consensus = lambda wildcards: [f for f in get_splits(wildcards, prefix="", suffix="_consensus.fastq") if wildcards.sample in f][0],
         reads = "demux/{sample}.fastq.gz"
     output:
         sam = "aln/{sample}_aln.sam",
@@ -57,7 +57,7 @@ rule plot_coverage:
     output:
         report("report/{sample}_coverage.pdf", category = "{sample}"), 
         report("report/{sample}_mismatch_freq.pdf", category = "{sample}"),
-        plot_flag = ".plot_{sample}.done", #flag file
+        plot_flag = touch(".plot_{sample}.done"), #flag file
     log:
         logf = "logs/aln/{sample}_plot_coverage.log"
     run:
