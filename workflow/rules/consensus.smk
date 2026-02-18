@@ -49,7 +49,7 @@ rule medaka_consensus_from_subreads:
     log:
         "logs/consensus/bulk_consensus.log"
     params:
-        min_depth = config["min_depth"],
+        min_depth = (config["min_depth"] - 1),
         medaka_model = config["medaka_model"]
     threads: config["medaka_spoa_threads"]
     shell:
