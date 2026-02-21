@@ -81,6 +81,7 @@ checkpoint move_low_depth_subreads:
     run:
         import pandas as pd
         os.makedirs(output.out, exist_ok=True)
+        os.makedirs("demux/.low_depth", exist_ok=True)
         df = pd.read_csv(input.csv)
         # Identify files below threshold
         low_read_files = df[df['n_reads'] < params.threshold]['sample'].tolist()

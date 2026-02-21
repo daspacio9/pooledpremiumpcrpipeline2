@@ -85,9 +85,11 @@ checkpoint split_fastq:
         Path(output.out_dir).mkdir(parents=True, exist_ok=True)
         with open(input.batchconsensus, "r") as handle:
             for record in SeqIO.parse(handle, "fastq"):
-                # Clean up the ID: Benchling doesn't like special chars in names
-                # We strip common sequencer chars like ':' or '/'
-                clean_name = record.id.split("_")[0] + "_consensus"
+                # Extract sample name from record ID (format: {sample}_subread{i})
+                # Remove the '_subread' part to get back the original sample name
+                parts = record.id.rsplit("_subread", 1)
+                sample_name = parts[0]
+                clean_name = sample_name + "_consensus"
                 file_path = os.path.join(output.out_dir, f"{clean_name}.fastq")
 
                 
