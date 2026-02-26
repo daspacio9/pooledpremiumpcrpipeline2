@@ -19,3 +19,4 @@ dependencies:
   - medaka
   - gzip
   - edlib
+  - seqkit

@@ -10,13 +10,28 @@
 #
 # ---------------------------------------------------------------------------------
 
+#Demultiplexing rule using cutadapt with linked adapters
+# -----------------------------------------------------
+rule filter_reads_by_length:
+    input:
+        fastq = f"sequences/{config['input_fastq']}"
+    output:
+        filtered = f"sequences/filtered_{config['input_fastq']}"
+    params:
+        min_length = config["filter-size"]
+    log:
+        "logs/filter/filter_reads.log"
+    shell:
+        r"""
+        seqkit seq -m {params.min_length} {input.fastq} 2> {log} | gzip -c > {output.filtered}
+        """
 
 #Demultiplexing rule using cutadapt with linked adapters
 # -----------------------------------------------------
 rule cutadapt_demux_linked:
     input:
         barcodes = use_debug(),
-        seq= f"sequences/{config['input_fastq']}"
+        seq= f"sequences/filtered_{config['input_fastq']}"
     output:
         # all per-sample fastqs + an explicit file for unmatched
         demux=expand("demux/{s}.fastq.gz", s=adapter_names(use_debug())),
