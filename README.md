@@ -57,10 +57,11 @@ Run the pipeline with a dryrun (-np), then run without to execute
 
 The pipeline runs with a separate workflow to prepare the barcode pairs reference file from the supplied files. This allows other indexing primers to be used in the pipeline. By providing a different barcode groups csv, barcode sequence fasta file, and primer consensus file
 ```bash
-snakemake -s ../workflow/Snakefile -j -4 prepare_reference
+snakemake -s ../workflow/Snakefile -j -4 prepare_barcode_reference -np
+snakemake -s ../workflow/Snakefile -j -4 prepare_barcode_reference --force
 ```
 ## Running the Example: demultiplex and consensus
-The barcode-pairs reference file should now exist. Start by using the touch command to change the system timestamp of the sequence files you downloaded from a potentially different timezone.
+The barcode-pairs reference file should always exist. Change it by using the prepare_reference module above with --force to overwrite the existing colE1 version of the reference file. Start by using the touch command to change the system timestamp of the sequence files you downloaded from a potentially different timezone.
 
 ```bash
 touch sequences/your_sequences.fastq
