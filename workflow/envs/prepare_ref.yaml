@@ -1,0 +1,7 @@
+name: pppp-prepare-ref
+channels:
+  - conda-forge
+  - bioconda
+dependencies:
+  - python
+  - biopython
