@@ -30,16 +30,29 @@ rule aln_to_consensus:
         "logs/aln/{sample}_aln.log"
     shell:
         r"""
+        echo "[$(date '+%Y-%m-%d %H:%M:%S')] Starting alignment" >> {log}
         minimap2 -ax map-ont {input.consensus} {input.reads} > {output.sam} 2>> {log}
+        echo "[$(date '+%Y-%m-%d %H:%M:%S')] Alignment complete, converting to BAM" >> {log}
+        
         samtools view -bo {output.bam} {output.sam} 2>> {log}
+        echo "[$(date '+%Y-%m-%d %H:%M:%S')] BAM conversion complete, sorting" >> {log}
+        
         samtools sort {output.bam} -o {output.sorted_bam} 2>> {log}
+        echo "[$(date '+%Y-%m-%d %H:%M:%S')] Sorting complete, indexing" >> {log}
+        
         samtools index {output.sorted_bam} 2>> {log}
+        echo "[$(date '+%Y-%m-%d %H:%M:%S')] Indexing complete, generating coverage" >> {log}
+        
         samtools depth -a -o {output.cov} {output.sorted_bam} 2>> {log}
+        echo "[$(date '+%Y-%m-%d %H:%M:%S')] Coverage complete, generating pileup" >> {log}
+        
         samtools mpileup -a -f {input.consensus} {output.sorted_bam} > {output.pileup} 2>> {log}
+        echo "[$(date '+%Y-%m-%d %H:%M:%S')] Alignment workflow complete" >> {log}
         """
 
 
 rule parse_mpileup_ref_match:
+    conda: "../envs/align.yaml"
     input:
         "report/{sample}_mpileup.txt"
     output:
@@ -53,6 +66,7 @@ rule parse_mpileup_ref_match:
         df_pileup.to_csv(output[0], sep='\t', index=False)
 
 rule plot_coverage:
+    conda: "../envs/align.yaml"
     input:
         "report/{sample}_pypileup.tsv"
     output:
@@ -61,48 +75,11 @@ rule plot_coverage:
         plot_flag = touch(".plot_{sample}.done"), #flag file
     log:
         logf = "logs/aln/{sample}_plot_coverage.log"
-    run:
-        import pandas as pd
-        import matplotlib
-        matplotlib.use('Agg')
-        import matplotlib.pyplot as plt
-        # Read coverage data
-        # Read reference match data
-        df_ref = pd.read_csv(input[0], sep="\t")
-        df_ref['freq_mismatch'] = (df_ref['coverage'] - df_ref['ref_match']) / df_ref['coverage']
-        df_ref['freq_mismatch'] = df_ref['freq_mismatch'].fillna(1)  # Handle NaN values if coverage is 0, set freq_mismatch to 1
-        # Plot coverage
-        # Fill the area between the curve and the x-axis (y=0)
-        
-        plt.figure(figsize=(10, 4))
-        plt.plot(df_ref["pos"], df_ref["coverage"], color='blue', linewidth=0.2)
-        plt.plot(df_ref["pos"], df_ref["ref_match"], color='green', linewidth=0.4, alpha=0.5)
-        plt.title(f"Coverage Plot for {wildcards.sample}")
-        plt.xlabel("Position")
-        plt.ylabel("Depth")
-        plt.yscale("linear")
-        plt.ylim(0, round(df_ref["coverage"].max()*1.1))  # Add some headroom
-        plt.legend(["Coverage", "Ref Match"])
-        plt.grid(False)
-        plt.savefig(output[0])
-        plt.close()
-
-        # Plot frequency of mismatches
-        plt.figure(figsize=(10, 4))
-        plt.plot(df_ref["pos"], df_ref["freq_mismatch"], color='red', linewidth=0.5)
-        plt.fill_between(df_ref["pos"], df_ref["freq_mismatch"], color='red', alpha=0.3)
-        plt.title(f"Substitution Plot for {wildcards.sample}")
-        plt.xlabel("Position")
-        plt.ylabel("freq")
-        plt.yscale("linear")
-        plt.ylim(0, (df_ref["freq_mismatch"]).max()*1.1)
-        plt.legend(["freq_mismatch"])
-        plt.grid(False)
-        plt.savefig(output[1])
-        plt.close()
-        with open(output.plot_flag, "w") as _f: _f.write("Plotting completed.\n")
+    script:
+        "../scripts/plot_coverage.py"
 
 rule coverage_done:
+    conda: "../envs/align.yaml"
     input:
         lambda wildcards: expand(".coverage_{sample}.done", sample=get_passed_samples(wildcards))
     output:
@@ -114,6 +91,7 @@ rule coverage_done:
             f.write("Coverage calculation completed.\n")
 
 rule plot_done:
+    conda: "../envs/align.yaml"
     input:
         lambda wildcards: expand(".plot_{sample}.done", sample=get_passed_samples(wildcards))
     output:

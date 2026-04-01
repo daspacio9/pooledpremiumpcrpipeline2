@@ -32,7 +32,9 @@ rule make_pppp_output_dir:
         timestampDir = lambda wildcards: config['timestamp'] + '-ppppOutputs'
     shell:
         """
+        echo "[$(date '+%Y-%m-%d %H:%M:%S')] Creating output directory" >> {log}
         mkdir -p {params.timestampDir} >> {log} 2>&1
+        echo "[$(date '+%Y-%m-%d %H:%M:%S')] Output directory created" >> {log}
         """
 
 # clean up compute batches alignment
@@ -47,8 +49,11 @@ rule alignment_clean:
         "cleanlogs/alignment_clean.log"
     shell:
         """
+        echo "[$(date '+%Y-%m-%d %H:%M:%S')] Starting alignment directory cleanup" >> {log}
         if [ -d aln ]; then
+            echo "[$(date '+%Y-%m-%d %H:%M:%S')] Removing aln directory" >> {log}
             rm -rv aln >> {log} 2>&1
+            echo "[$(date '+%Y-%m-%d %H:%M:%S')] Alignment directory removed" >> {log}
         fi
         """
 
@@ -66,8 +71,11 @@ rule demux_clean:
         timestampDir = lambda wildcards: config['timestamp'] + '-ppppOutputs'
     shell:
         """
+        echo "[$(date '+%Y-%m-%d %H:%M:%S')] Starting demux directory cleanup" >> {log}
         if [ -d demux ]; then
+            echo "[$(date '+%Y-%m-%d %H:%M:%S')] Removing demux directory" >> {log}
             rm -rv demux >> {log} 2>&1
+            echo "[$(date '+%Y-%m-%d %H:%M:%S')] Demux directory removed" >> {log}
         fi
         """
 
@@ -85,11 +93,15 @@ rule consensus_clean:
         timestampDir = lambda wildcards: config['timestamp'] + '-ppppOutputs'
     shell:
         """
+        echo "[$(date '+%Y-%m-%d %H:%M:%S')] Starting consensus directory cleanup" >> {log}
         if [ -d consensus ]; then
+            echo "[$(date '+%Y-%m-%d %H:%M:%S')] Creating output directories for consensus" >> {log}
             mkdir -p {params.timestampDir}/consensus >> {log} 2>&1
             mkdir -p {params.timestampDir}/consensus_split >> {log} 2>&1
+            echo "[$(date '+%Y-%m-%d %H:%M:%S')] Moving consensus directories" >> {log}
             mv consensus {params.timestampDir}/consensus/ >> {log} 2>&1
             mv consensus_split {params.timestampDir}/consensus_split/ >> {log} 2>&1
+            echo "[$(date '+%Y-%m-%d %H:%M:%S')] Consensus directories moved" >> {log}
         fi
         """
 
@@ -103,15 +115,23 @@ rule logs_clean:
         touch('.logs_clean.done')
     params:
         timestampDir = lambda wildcards: config['timestamp'] + '-ppppOutputs'
+    log:
+        "cleanlogs/logs_clean.log"
     shell:
         """
+        echo "[$(date '+%Y-%m-%d %H:%M:%S')] Starting logs directory cleanup" >> {log}
         if [ -d logs ]; then
+            echo "[$(date '+%Y-%m-%d %H:%M:%S')] Moving logs directory" >> {log}
             mkdir -p {params.timestampDir}/logs
-            mv logs {params.timestampDir}/
+            mv logs {params.timestampDir}/ >> {log} 2>&1
+            echo "[$(date '+%Y-%m-%d %H:%M:%S')] Logs directory moved" >> {log}
         fi
+        echo "[$(date '+%Y-%m-%d %H:%M:%S')] Copying config files" >> {log}
         mkdir -p {params.timestampDir}/config
-        cp config/*.yaml {params.timestampDir}/config/
-        cp -r ref {params.timestampDir}/ref/
+        cp config/*.yaml {params.timestampDir}/config/ >> {log} 2>&1
+        echo "[$(date '+%Y-%m-%d %H:%M:%S')] Copying reference files" >> {log}
+        cp -r ref {params.timestampDir}/ref/ >> {log} 2>&1
+        echo "[$(date '+%Y-%m-%d %H:%M:%S')] Logs cleanup complete" >> {log}
         """
 
 # clean up reports
@@ -128,12 +148,16 @@ rule report_clean:
         "cleanlogs/report_clean.log"
     shell:
         """
+        echo "[$(date '+%Y-%m-%d %H:%M:%S')] Starting report directory cleanup" >> {log}
         if [ -d report ]; then
+            echo "[$(date '+%Y-%m-%d %H:%M:%S')] Moving report directory" >> {log}
             mv report {params.timestampDir}/report/ >> {log} 2>&1
         fi
         if [ -f demux_stats.csv ]; then
+            echo "[$(date '+%Y-%m-%d %H:%M:%S')] Moving demux_stats.csv" >> {log}
             mv demux_stats.csv {params.timestampDir}/ >> {log} 2>&1
         fi
+        echo "[$(date '+%Y-%m-%d %H:%M:%S')] Report cleanup complete" >> {log}
         """
 rule ab1_clean:
     conda: "../envs/clean.yaml"
@@ -147,8 +171,11 @@ rule ab1_clean:
         "cleanlogs/ab1_clean.log"
     shell:
         """
+        echo "[$(date '+%Y-%m-%d %H:%M:%S')] Starting ab1 directory cleanup" >> {log}
         if [ -d ab1 ]; then
+            echo "[$(date '+%Y-%m-%d %H:%M:%S')] Moving ab1 directory" >> {log}
             mv ab1/ {params.timestampDir}/ >> {log} 2>&1
+            echo "[$(date '+%Y-%m-%d %H:%M:%S')] AB1 directory moved" >> {log}
         fi
         """
 # clean up intermediate files
@@ -165,9 +192,13 @@ rule clean:
         rules.ab1_clean.output
     params:
         timestampDir = lambda wildcards: config['timestamp'] + '-ppppOutputs'
+    log:
+        "cleanlogs/clean.log"
     shell:
         """
-        rm {input}
+        echo "[$(date '+%Y-%m-%d %H:%M:%S')] Starting final cleanup" >> {log}
+        echo "[$(date '+%Y-%m-%d %H:%M:%S')] Removing intermediate files" >> {log}
+        rm {input} >> {log} 2>&1
         if [ -d cleanlogs ]; then
             mv cleanlogs {params.timestampDir}
         fi

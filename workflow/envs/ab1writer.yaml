@@ -6,3 +6,4 @@ dependencies:
   - python
   - biopython
   - pysam
+  - pandas

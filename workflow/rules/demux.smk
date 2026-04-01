@@ -24,7 +24,9 @@ rule filter_reads_by_length:
         "logs/filter/filter_reads.log"
     shell:
         r"""
-        seqkit seq -m {params.min_length} {input.fastq} 2> {log} | gzip -c > {output.filtered}
+        echo "[$(date '+%Y-%m-%d %H:%M:%S')] Starting read length filtering" >> {log}
+        seqkit seq -m {params.min_length} {input.fastq} 2>> {log} | gzip -c > {output.filtered}
+        echo "[$(date '+%Y-%m-%d %H:%M:%S')] Read filtering complete" >> {log}
         """
 
 #Demultiplexing rule using cutadapt with linked adapters
@@ -45,6 +47,7 @@ rule cutadapt_demux_linked:
         "logs/cutadapt/demux.log"
     shell:
         r""" 
+        echo "[$(date '+%Y-%m-%d %H:%M:%S')] Starting cutadapt demultiplexing" >> {log}
         cutadapt \
           -g file:{input.barcodes} \
           --revcomp \
@@ -55,11 +58,13 @@ rule cutadapt_demux_linked:
           --untrimmed-output {output.unknown} \
           {input.seq} \
         >> {log} 2>&1
+        echo "[$(date '+%Y-%m-%d %H:%M:%S')] Cutadapt demultiplexing complete" >> {log}
         """
 
 # Checkpoint to count reads in each demuxed fastq.gz file and write to demux_stats.csv
 # -----------------------------------------------------
 checkpoint demux_stats:
+    conda: "../envs/demux.yaml"
     input:
         samplefiles = expand("demux/{s}.fastq.gz", s=adapter_names(use_debug())),
         unkfiles = "demux/unknown.fastq.gz"
@@ -67,26 +72,14 @@ checkpoint demux_stats:
         report("demux_stats.csv", category = "demux", labels={"type": "stats", "status": "Unfiltered"})
     log:
         logf = "logs/cutadapt/demux_stats.log"
-    run:
-        import gzip
-        with open(output[0], "w") as outf:
-            outf.write("sample,n_reads\n")
-            with open(log.logf, "w") as logf:
-                logf.write("Demux stats log\n")
-                for samplefile in input.samplefiles + [input.unkfiles]:
-                    sample = os.path.basename(samplefile).replace(".fastq.gz", "")
-                    with gzip.open(samplefile, "rt") as f:
-                        cntr1 = 0
-                        for line in f:
-                            cntr1 += 1
-                    n_reads = cntr1 // 4
-                    outf.write(f"{sample},{n_reads}\n")
-                    logf.write(f"Sample {sample}: {n_reads} reads")
+    script:
+        "../scripts/demux_stats.py"
 
 
 # Checkpoint to count reads in each demuxed fastq.gz file and write to demux_stats.csv
 # -----------------------------------------------------
 checkpoint move_low_depth_subreads:
+    conda: "../envs/demux.yaml"
     input:
         csv = "demux_stats.csv",
     output:
@@ -95,19 +88,8 @@ checkpoint move_low_depth_subreads:
         threshold = config["min_depth"]
     log:
         logf = "logs/cutadapt/move_low_depth_subreads.log"
-    run:
-        import pandas as pd
-        os.makedirs(output.out, exist_ok=True)
-        os.makedirs("demux/.low_depth", exist_ok=True)
-        df = pd.read_csv(input.csv)
-        # Identify files below threshold
-        low_read_files = df[df['n_reads'] < params.threshold]['sample'].tolist()
-        with open(log.logf, "w") as logf:
-                logf.write("Demux stats log\n")
-        # Create empty "flag" files to tell Snakemake what to move
-        for f in low_read_files:
-            with open(os.path.join(output.out, f"{f}.fastq.gz"), 'w') as out:
-                out.write("")
+    script:
+        "../scripts/move_low_depth_subreads.py"
 
 # File system I/O
 # -----------------------------------------------------

@@ -3,6 +3,13 @@ import re
 from datetime import datetime
 
 
+def log_msg(logf, message):
+    """Helper to write timestamped messages to log file"""
+    timestamp = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+    logf.write(f"[{timestamp}] {message}\n")
+    logf.flush()
+
+
 def now():
     """Return the current date and time as a string formatted as YY-MM-DD-HH-MM-SS."""
     return datetime.now().strftime("%y-%m-%d-%H%M%S")

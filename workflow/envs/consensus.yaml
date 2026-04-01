@@ -7,3 +7,4 @@ dependencies:
   - medaka
   - biopython
   - pysam
+  - pandas

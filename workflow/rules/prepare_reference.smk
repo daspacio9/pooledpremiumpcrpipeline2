@@ -43,6 +43,8 @@ rule prepare_barcode_reference:
             f"ref/{config['barcode_groups']}",
             f"ref/{config['barcodes']}"
     output: out1 = "ref/barcode-pairs.txt"
+    log:
+        "logs/prepare_reference/barcode_reference.log"
     script: 
         "../scripts/prepare_barcode-pairs.py"
 
