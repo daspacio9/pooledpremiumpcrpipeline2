@@ -4,19 +4,6 @@ channels:
   - bioconda
 dependencies:
   - snakemake
-  - jinja2
-  - matplotlib
-  - graphviz
-  - bcftools 
-  - samtools 
-  - bwa 
-  - pygments
-  - pysam
-  - minimap2
-  - biopython
-  - Nanoplot
-  - cutadapt
-  - medaka
   - gzip
-  - edlib
-  - seqkit
+  - python
+  - biopython
