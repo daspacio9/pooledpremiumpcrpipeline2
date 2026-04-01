@@ -14,6 +14,7 @@
 ### Alignment to the consensus and coverage, consensus match calculation rules and plotting thereof
 # -----------------------------------------------------
 rule aln_to_consensus:
+    conda: "../envs/align.yaml"
     input:
         consensus = lambda wildcards: [f for f in get_splits(wildcards, prefix="", suffix="_consensus.fastq") if wildcards.sample in f][0],
         reads = "demux/{sample}.fastq.gz"

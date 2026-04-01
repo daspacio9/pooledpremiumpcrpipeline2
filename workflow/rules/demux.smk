@@ -13,6 +13,7 @@
 #Demultiplexing rule using cutadapt with linked adapters
 # -----------------------------------------------------
 rule filter_reads_by_length:
+    conda: "../envs/demux.yaml"
     input:
         fastq = f"sequences/{config['input_fastq']}"
     output:
@@ -29,6 +30,7 @@ rule filter_reads_by_length:
 #Demultiplexing rule using cutadapt with linked adapters
 # -----------------------------------------------------
 rule cutadapt_demux_linked:
+    conda: "../envs/demux.yaml"
     input:
         barcodes = use_debug(),
         seq= f"sequences/filtered_{config['input_fastq']}"
@@ -110,6 +112,7 @@ checkpoint move_low_depth_subreads:
 # File system I/O
 # -----------------------------------------------------
 rule move_file:
+    conda: "../envs/demux.yaml"
     input:
         known = "demux/{filename}.fastq.gz"
     output:
@@ -122,6 +125,7 @@ rule move_file:
 # Rule to finalize demultiplexing by removing placeholder files
 # -----------------------------------------------------
 rule finalize_demux:
+    conda: "../envs/demux.yaml"
     input:
         get_moved_files
     output:

@@ -12,6 +12,7 @@
 ### Chunking the pypileup file for the ab1 writer at 5 kb. ab1 format has a max length of ~8 kb according to plasmidsaurus, but 5kb is a nice round number.
 # -----------------------------------------------------
 checkpoint chunk_pypileup:
+    conda: "../envs/ab1writer.yaml"
     input:
         "report/{sample}_pypileup.tsv"
     output:
@@ -42,6 +43,7 @@ checkpoint chunk_pypileup:
 
 
 rule write_ab1:
+    conda: "../envs/ab1writer.yaml"
     input:
         chunk_flag = "report/.chunks_{sample}.done",
         chunk_file = "report/pileup_chunks/{sample}_pypileup_chunk_{chunk}.tsv"
@@ -58,6 +60,7 @@ rule write_ab1:
         write_ab1(output.ab1_file, cons_seq, base_counts['G'], base_counts['A'], base_counts['T'], base_counts['C'])
 
 rule ab1_done:
+    conda: "../envs/ab1writer.yaml"
     input:
         ab1_files = lambda wildcards: get_all_ab1_files(wildcards)
     output:

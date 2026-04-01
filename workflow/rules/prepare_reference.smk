@@ -38,6 +38,7 @@ configfile: "config/config.yaml"
 # -----------------------------------------------------
 
 rule prepare_barcode_reference:
+    conda: "../envs/prepare_ref.yaml"
     input: f"ref/{config['primer_consensus']}",
             f"ref/{config['barcode_groups']}",
             f"ref/{config['barcodes']}"

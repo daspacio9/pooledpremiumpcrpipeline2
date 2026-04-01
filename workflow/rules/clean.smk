@@ -23,6 +23,7 @@ config['timestamp'] = datetime.now().strftime("%Y_%m_%d-%H%M%S")
 # clean up sequences folder: remove combined .fastq.gz files (but not basecalled batches), move UMI stats files
 # -----------------------------------------------------
 rule make_pppp_output_dir:
+    conda: "../envs/clean.yaml"
     output:
         touch('.make_pppp_output_dir.done')   # changed: consistent touch filename
     log:
@@ -37,6 +38,7 @@ rule make_pppp_output_dir:
 # clean up compute batches alignment
 # -----------------------------------------------------
 rule alignment_clean:
+    conda: "../envs/clean.yaml"
     input:
         rules.make_pppp_output_dir.output
     output:
@@ -53,6 +55,7 @@ rule alignment_clean:
 # clean up compute batches demux
 # -----------------------------------------------------
 rule demux_clean:
+    conda: "../envs/clean.yaml"
     input:
         rules.make_pppp_output_dir.output
     output:
@@ -71,6 +74,7 @@ rule demux_clean:
 # clean up consensus outputs
 # -----------------------------------------------------
 rule consensus_clean:
+    conda: "../envs/clean.yaml"
     input:
         rules.make_pppp_output_dir.output
     output:
@@ -92,6 +96,7 @@ rule consensus_clean:
 # clean up logs  rm -r {params.timestampDir}/consensus_split/.*.done
 # -----------------------------------------------------
 rule logs_clean:
+    conda: "../envs/clean.yaml"
     input:
         rules.make_pppp_output_dir.output
     output:
@@ -112,6 +117,7 @@ rule logs_clean:
 # clean up reports
 # -----------------------------------------------------
 rule report_clean:
+    conda: "../envs/clean.yaml"
     input:
         rules.make_pppp_output_dir.output
     output:
@@ -130,6 +136,7 @@ rule report_clean:
         fi
         """
 rule ab1_clean:
+    conda: "../envs/clean.yaml"
     input:
         rules.make_pppp_output_dir.output
     output:
@@ -147,8 +154,9 @@ rule ab1_clean:
 # clean up intermediate files
 # -----------------------------------------------------
 rule clean:
+    conda: "../envs/clean.yaml"
     input:
-        rules.make_pppp_output_dir.output,   
+        rules.make_pppp_output_dir.output,
         rules.alignment_clean.output,
         rules.demux_clean.output,
         rules.consensus_clean.output,
