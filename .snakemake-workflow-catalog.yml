@@ -2,10 +2,9 @@
 
 usage:
   mandatory-flags:
-    desc: # describe your flags here in a few sentences
-    flags: # put your flags here
-  software-stack-deployment:
+    desc: flags that must be used when running the pipeline, e.g. --use-conda, --cores, --snakefile
+    flags: --use-conda, --cores, --snakefile
     conda: true # whether pipeline works with '--sdm conda'
-    apptainer: true # whether pipeline works with '--sdm apptainer/singularity'
-    apptainer+conda: true # whether pipeline works with '--sdm conda apptainer/singularity'
-    report: true # whether creation of reports using 'snakemake --report report.zip' is supported
+    apptainer: false # whether pipeline works with '--sdm apptainer/singularity'
+    apptainer+conda: false # whether pipeline works with '--sdm conda apptainer/singularity'
+    report: false # whether creation of reports using 'snakemake --report report.zip' is supported
