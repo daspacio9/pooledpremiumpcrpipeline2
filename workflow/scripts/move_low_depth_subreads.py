@@ -17,10 +17,12 @@ with open(snakemake.log.logf, "w") as logf:
     df = pd.read_csv(snakemake.input.csv)
     log_msg(logf, f"Total samples in statistics: {len(df)}")
     
-    # Identify files below threshold
+    # Identify files below threshold, excluding 'unknown' which is handled by finalize_demux
     log_msg(logf, f"Identifying samples with reads < {snakemake.params.threshold}")
-    low_read_files = df[df['n_reads'] < snakemake.params.threshold]['sample'].tolist()
-    log_msg(logf, f"Found {len(low_read_files)} samples below threshold")
+    low_read_files = df[
+        (df['n_reads'] < snakemake.params.threshold) & (df['sample'] != 'unknown')
+    ]['sample'].tolist()
+    log_msg(logf, f"Found {len(low_read_files)} samples below threshold (excluding 'unknown')")
     
     # Create empty "flag" files to tell Snakemake what to move
     log_msg(logf, "Creating placeholder files for low depth samples")
