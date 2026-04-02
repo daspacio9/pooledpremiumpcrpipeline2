@@ -13,3 +13,5 @@ workflow/notebooks/.ipynb_checkpoints/**
 **/Rplots.pdf
 working_directori*/**
 working_directory_*/**
+*.7z
+.test/2026*
