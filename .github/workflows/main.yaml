@@ -4,7 +4,11 @@ on:
   push:
     branches: [main]
   pull_request:
-    branches: [main]
+    branches: [main, linting]
+
+permissions:
+  pull-requests: write
+  contents: read
 
 jobs:
   Formatting:
