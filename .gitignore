@@ -15,3 +15,4 @@ working_directori*/**
 working_directory_*/**
 *.7z
 .test/2026*
+/workflow/scripts/__*.pyc

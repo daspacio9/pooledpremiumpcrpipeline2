@@ -32,6 +32,24 @@ rule filter_reads_by_length:
         """
 
 
+# Count statistics on filtered reads
+# --------------------
+rule count_filtered_reads:
+    input:
+        source=f"sequences/{config['input_fastq']}",
+        filtered=f"sequences/filtered_{config['input_fastq']}",
+    output:
+        stats="logs/filter/filter_stats.csv",
+    log:
+        logf="logs/filter/count_filtered_reads.log",
+    conda:
+        "../envs/demux.yaml"
+    params:
+        min_length=config["filter-size"],
+    script:
+        "../scripts/count_filtered_reads.py"
+
+
 # Demultiplexing rule using cutadapt with linked adapters
 # -----------------------------------------------------
 rule cutadapt_demux_linked:
@@ -87,10 +105,13 @@ checkpoint demux_stats:
 
 
 # Checkpoint to count reads in each demuxed fastq.gz file and write to demux_stats.csv
+# Includes error handling if no barcode groups pass min_depth threshold
+# Incorporates filter statistics for comprehensive error reporting
 # -----------------------------------------------------
 checkpoint move_low_depth_subreads:
     input:
         csv="demux_stats.csv",
+        filter_stats="logs/filter/filter_stats.csv",
     output:
         out=(directory("demux/filtered_list")),
     log:
