@@ -62,15 +62,11 @@ rule parse_mpileup_ref_match:
     output:
         "report/{sample}_pypileup.tsv",
     log:
-        "logs/aln/{sample}_parse_mpileup_ref_match.log",
+        logf="logs/aln/{sample}_parse_mpileup_ref_match.log",
     conda:
         "../envs/align.yaml"
-    run:
-        import pandas as pd
-        from common import parse_mpileup
-
-        df_pileup = parse_mpileup(input[0])
-        df_pileup.to_csv(output[0], sep="\t", index=False)
+    script:
+        "../scripts/parse_mpileup_ref_match.py"
 
 
 rule plot_coverage:

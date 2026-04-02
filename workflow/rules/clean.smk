@@ -26,7 +26,7 @@ localrules:
     logs_clean,
     report_clean,
     clean,
-
+    ab1_clean
 
 config["timestamp"] = datetime.now().strftime("%Y_%m_%d-%H%M%S")
 

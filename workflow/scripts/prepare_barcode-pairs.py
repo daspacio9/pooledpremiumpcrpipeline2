@@ -1,4 +1,3 @@
-
 """
 Demultiplexing rules and preparation of inputs by primer structure for cutadapt.
 Combines barcode groups with primer contexts to create adapter pairs for cutadapt.
@@ -30,8 +29,8 @@ with open(snakemake.log[0], "w") as logf:
     log_msg(logf, "Building sample to barcode mapping")
     sample_barcodes = {}
     for index, row in barcode_groups.iterrows():
-        sample = row[0]
-        barcodes = row[1:].dropna().tolist()
+        sample = row.iloc[0]
+        barcodes = row.iloc[1:].dropna().tolist()
         
         # Validate that each sample has exactly 2 barcodes (forward and reverse)
         if len(barcodes) != 2:

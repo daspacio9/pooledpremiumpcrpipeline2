@@ -31,7 +31,6 @@ absolute_path = f"{snakefile_basedir}/{relative_path}"
 if str(absolute_path) not in sys.path:
     sys.path.append(absolute_path)
 
-import common
 
 
 configfile: "config/config.yaml"
