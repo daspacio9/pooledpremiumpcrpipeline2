@@ -2,8 +2,8 @@
 
 usage:
   mandatory-flags:
-    desc: flags that must be used when running the pipeline, e.g. --use-conda, --cores, --snakefile
-    flags: --use-conda, --cores, --snakefile
+    desc: "flags that must be used when running the pipeline, e.g. --use-conda, --cores, --snakefile"
+    flags: ["--use-conda", "--cores", "--snakefile"]
     conda: true # whether pipeline works with '--sdm conda'
     apptainer: false # whether pipeline works with '--sdm apptainer/singularity'
     apptainer+conda: false # whether pipeline works with '--sdm conda apptainer/singularity'
