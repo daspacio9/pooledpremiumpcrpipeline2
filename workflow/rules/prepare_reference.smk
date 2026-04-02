@@ -22,7 +22,7 @@ snakefile_basedir = Path(workflow.basedir)
 
 # add PATHs relative to Snakefile:
 # -----------------------------------------------------
-relative_path = "scripts" 
+relative_path = "scripts"
 
 absolute_path = f"{snakefile_basedir}/{relative_path}"
 
@@ -31,21 +31,25 @@ absolute_path = f"{snakefile_basedir}/{relative_path}"
 if str(absolute_path) not in sys.path:
     sys.path.append(absolute_path)
 
-import common
+
+
 configfile: "config/config.yaml"
+
 
 ### Demultiplexing rules and preparation of inputs by primer structure for cutadapt
 # -----------------------------------------------------
 
+
 rule prepare_barcode_reference:
-    input: f"ref/{config['primer_consensus']}",
-            f"ref/{config['barcode_groups']}",
-            f"ref/{config['barcodes']}"
-    output: out1 = "ref/barcode-pairs.txt"
-    script: 
+    input:
+        f"ref/{config['primer_consensus']}",
+        f"ref/{config['barcode_groups']}",
+        f"ref/{config['barcodes']}",
+    output:
+        out1="ref/barcode-pairs.txt",
+    log:
+        "logs/prepare_reference/barcode_reference.log",
+    conda:
+        "../envs/prepare_ref.yaml"
+    script:
         "../scripts/prepare_barcode-pairs.py"
-
-
-
-    
-

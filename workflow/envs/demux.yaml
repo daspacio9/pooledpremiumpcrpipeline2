@@ -1,0 +1,9 @@
+name: pppp-demux
+channels:
+  - conda-forge
+  - bioconda
+dependencies:
+  - python
+  - cutadapt
+  - seqkit
+  - pandas

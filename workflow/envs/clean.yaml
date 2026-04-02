@@ -1,0 +1,6 @@
+name: pppp-clean
+channels:
+  - conda-forge
+dependencies:
+  - python
+  - pandas

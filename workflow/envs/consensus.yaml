@@ -1,0 +1,10 @@
+name: pppp-consensus
+channels:
+  - conda-forge
+  - bioconda
+dependencies:
+  - python
+  - medaka
+  - biopython
+  - pysam
+  - pandas

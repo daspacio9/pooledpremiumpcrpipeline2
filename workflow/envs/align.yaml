@@ -1,0 +1,10 @@
+name: pppp-align
+channels:
+  - conda-forge
+  - bioconda
+dependencies:
+  - python
+  - minimap2
+  - samtools
+  - pandas
+  - matplotlib

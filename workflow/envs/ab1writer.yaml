@@ -1,0 +1,9 @@
+name: pppp-ab1writer
+channels:
+  - conda-forge
+  - bioconda
+dependencies:
+  - python
+  - biopython
+  - pysam
+  - pandas
