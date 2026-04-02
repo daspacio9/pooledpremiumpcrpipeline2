@@ -36,6 +36,7 @@ rule medaka_consensus_from_subreads:
         fastas=expand(
             "demux/temp/{sample}_subreads_batch.fastq.gz", sample=get_passed_samples
         ),
+        check=directory("demux/filtered_list")  # Require checkpoint output
     output:
         outDir=(directory("consensus/bulk_consensus")),
         consensus="consensus/bulk_consensus/consensus.fastq",
