@@ -15,21 +15,33 @@
 # -----------------------------------------------------
 import os, sys, glob
 from datetime import datetime
-# local rules
-localrules: make_pppp_output_dir, alignment_clean, demux_clean, consensus_clean, logs_clean, report_clean, clean
 
-config['timestamp'] = datetime.now().strftime("%Y_%m_%d-%H%M%S")
-    
+
+# local rules
+localrules:
+    make_pppp_output_dir,
+    alignment_clean,
+    demux_clean,
+    consensus_clean,
+    logs_clean,
+    report_clean,
+    clean,
+
+
+config["timestamp"] = datetime.now().strftime("%Y_%m_%d-%H%M%S")
+
+
 # clean up sequences folder: remove combined .fastq.gz files (but not basecalled batches), move UMI stats files
 # -----------------------------------------------------
 rule make_pppp_output_dir:
-    conda: "../envs/clean.yaml"
     output:
-        touch('.make_pppp_output_dir.done')   # changed: consistent touch filename
+        touch(".make_pppp_output_dir.done"),  # changed: consistent touch filename
     log:
-        "cleanlogs/make_pppp_output_dir.log"
+        "cleanlogs/make_pppp_output_dir.log",
+    conda:
+        "../envs/clean.yaml"
     params:
-        timestampDir = lambda wildcards: config['timestamp'] + '-ppppOutputs'
+        timestampDir=lambda wildcards: config["timestamp"] + "-ppppOutputs",
     shell:
         """
         echo "[$(date '+%Y-%m-%d %H:%M:%S')] Creating output directory" >> {log}
@@ -37,16 +49,18 @@ rule make_pppp_output_dir:
         echo "[$(date '+%Y-%m-%d %H:%M:%S')] Output directory created" >> {log}
         """
 
+
 # clean up compute batches alignment
 # -----------------------------------------------------
 rule alignment_clean:
-    conda: "../envs/clean.yaml"
     input:
-        rules.make_pppp_output_dir.output
+        rules.make_pppp_output_dir.output,
     output:
-        touch('.alignment_clean.done')
+        touch(".alignment_clean.done"),
     log:
-        "cleanlogs/alignment_clean.log"
+        "cleanlogs/alignment_clean.log",
+    conda:
+        "../envs/clean.yaml"
     shell:
         """
         echo "[$(date '+%Y-%m-%d %H:%M:%S')] Starting alignment directory cleanup" >> {log}
@@ -57,18 +71,20 @@ rule alignment_clean:
         fi
         """
 
+
 # clean up compute batches demux
 # -----------------------------------------------------
 rule demux_clean:
-    conda: "../envs/clean.yaml"
     input:
-        rules.make_pppp_output_dir.output
+        rules.make_pppp_output_dir.output,
     output:
-        touch('.demux_clean.done')
+        touch(".demux_clean.done"),
     log:
-        "cleanlogs/demux_clean.log"
+        "cleanlogs/demux_clean.log",
+    conda:
+        "../envs/clean.yaml"
     params:
-        timestampDir = lambda wildcards: config['timestamp'] + '-ppppOutputs'
+        timestampDir=lambda wildcards: config["timestamp"] + "-ppppOutputs",
     shell:
         """
         echo "[$(date '+%Y-%m-%d %H:%M:%S')] Starting demux directory cleanup" >> {log}
@@ -79,18 +95,20 @@ rule demux_clean:
         fi
         """
 
+
 # clean up consensus outputs
 # -----------------------------------------------------
 rule consensus_clean:
-    conda: "../envs/clean.yaml"
     input:
-        rules.make_pppp_output_dir.output
+        rules.make_pppp_output_dir.output,
     output:
-        touch('.consensus_clean.done')
+        touch(".consensus_clean.done"),
     log:
-        "cleanlogs/consensus_clean.log"
+        "cleanlogs/consensus_clean.log",
+    conda:
+        "../envs/clean.yaml"
     params:
-        timestampDir = lambda wildcards: config['timestamp'] + '-ppppOutputs'
+        timestampDir=lambda wildcards: config["timestamp"] + "-ppppOutputs",
     shell:
         """
         echo "[$(date '+%Y-%m-%d %H:%M:%S')] Starting consensus directory cleanup" >> {log}
@@ -105,18 +123,20 @@ rule consensus_clean:
         fi
         """
 
+
 # clean up logs  rm -r {params.timestampDir}/consensus_split/.*.done
 # -----------------------------------------------------
 rule logs_clean:
-    conda: "../envs/clean.yaml"
     input:
-        rules.make_pppp_output_dir.output
+        rules.make_pppp_output_dir.output,
     output:
-        touch('.logs_clean.done')
-    params:
-        timestampDir = lambda wildcards: config['timestamp'] + '-ppppOutputs'
+        touch(".logs_clean.done"),
     log:
-        "cleanlogs/logs_clean.log"
+        "cleanlogs/logs_clean.log",
+    conda:
+        "../envs/clean.yaml"
+    params:
+        timestampDir=lambda wildcards: config["timestamp"] + "-ppppOutputs",
     shell:
         """
         echo "[$(date '+%Y-%m-%d %H:%M:%S')] Starting logs directory cleanup" >> {log}
@@ -134,18 +154,20 @@ rule logs_clean:
         echo "[$(date '+%Y-%m-%d %H:%M:%S')] Logs cleanup complete" >> {log}
         """
 
+
 # clean up reports
 # -----------------------------------------------------
 rule report_clean:
-    conda: "../envs/clean.yaml"
     input:
-        rules.make_pppp_output_dir.output
+        rules.make_pppp_output_dir.output,
     output:
-        touch('.report_clean.done')
-    params:
-        timestampDir = lambda wildcards: config['timestamp'] + '-ppppOutputs'
+        touch(".report_clean.done"),
     log:
-        "cleanlogs/report_clean.log"
+        "cleanlogs/report_clean.log",
+    conda:
+        "../envs/clean.yaml"
+    params:
+        timestampDir=lambda wildcards: config["timestamp"] + "-ppppOutputs",
     shell:
         """
         echo "[$(date '+%Y-%m-%d %H:%M:%S')] Starting report directory cleanup" >> {log}
@@ -159,16 +181,19 @@ rule report_clean:
         fi
         echo "[$(date '+%Y-%m-%d %H:%M:%S')] Report cleanup complete" >> {log}
         """
+
+
 rule ab1_clean:
-    conda: "../envs/clean.yaml"
     input:
-        rules.make_pppp_output_dir.output
+        rules.make_pppp_output_dir.output,
     output:
-        touch('.ab1_clean.done')
-    params:
-        timestampDir = lambda wildcards: config['timestamp'] + '-ppppOutputs'
+        touch(".ab1_clean.done"),
     log:
-        "cleanlogs/ab1_clean.log"
+        "cleanlogs/ab1_clean.log",
+    conda:
+        "../envs/clean.yaml"
+    params:
+        timestampDir=lambda wildcards: config["timestamp"] + "-ppppOutputs",
     shell:
         """
         echo "[$(date '+%Y-%m-%d %H:%M:%S')] Starting ab1 directory cleanup" >> {log}
@@ -178,22 +203,25 @@ rule ab1_clean:
             echo "[$(date '+%Y-%m-%d %H:%M:%S')] AB1 directory moved" >> {log}
         fi
         """
+
+
 # clean up intermediate files
 # -----------------------------------------------------
 rule clean:
-    conda: "../envs/clean.yaml"
     input:
         rules.make_pppp_output_dir.output,
         rules.alignment_clean.output,
         rules.demux_clean.output,
         rules.consensus_clean.output,
-        rules.logs_clean.output,              
+        rules.logs_clean.output,
         rules.report_clean.output,
-        rules.ab1_clean.output
-    params:
-        timestampDir = lambda wildcards: config['timestamp'] + '-ppppOutputs'
+        rules.ab1_clean.output,
     log:
-        "cleanlogs/clean.log"
+        "cleanlogs/clean.log",
+    conda:
+        "../envs/clean.yaml"
+    params:
+        timestampDir=lambda wildcards: config["timestamp"] + "-ppppOutputs",
     shell:
         """
         echo "[$(date '+%Y-%m-%d %H:%M:%S')] Starting final cleanup" >> {log}

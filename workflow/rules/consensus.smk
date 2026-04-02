@@ -10,17 +10,19 @@
 #
 # ---------------------------------------------------------------------------------
 
+
 ### Subread classification and consensus generation rules
 # Classify reads in fastq to subreads following the required formatting by medaka smolecule package
 # -----------------------------------------------------
 rule fastq_to_fastq_subreads:
-    conda: "../envs/consensus.yaml"
     input:
-        inf = "demux/{sample}.fastq.gz"
+        inf="demux/{sample}.fastq.gz",
     output:
-        outf = "demux/temp/{sample}_subreads_batch.fastq.gz"
+        outf="demux/temp/{sample}_subreads_batch.fastq.gz",
     log:
-        logf = "logs/consensus/{sample}_fastq_to_fastq_subreads.log"
+        logf="logs/consensus/{sample}_fastq_to_fastq_subreads.log",
+    conda:
+        "../envs/consensus.yaml"
     script:
         "../scripts/fastq_to_fastq_subreads.py"
 
@@ -29,19 +31,22 @@ rule fastq_to_fastq_subreads:
 # Helper to get all samples from your data folder
 # -----------------------------------------------------
 rule medaka_consensus_from_subreads:
-    conda: "../envs/consensus.yaml"
     input:
         # This collects ALL fastq.gz files into one list for parallel threading on Medaka smolecule
-        fastas = expand("demux/temp/{sample}_subreads_batch.fastq.gz", sample=get_passed_samples)
+        fastas=expand(
+            "demux/temp/{sample}_subreads_batch.fastq.gz", sample=get_passed_samples
+        ),
     output:
-        outDir = (directory("consensus/bulk_consensus")),
-        consensus = "consensus/bulk_consensus/consensus.fastq"
+        outDir=(directory("consensus/bulk_consensus")),
+        consensus="consensus/bulk_consensus/consensus.fastq",
     log:
-        "logs/consensus/bulk_consensus.log"
-    params:
-        min_depth = (config["min_depth"] - 1),
-        medaka_model = config["medaka_model"]
+        "logs/consensus/bulk_consensus.log",
+    conda:
+        "../envs/consensus.yaml"
     threads: config["medaka_spoa_threads"]
+    params:
+        min_depth=(config["min_depth"] - 1),
+        medaka_model=config["medaka_model"],
     shell:
         r"""
         echo "[$(date '+%Y-%m-%d %H:%M:%S')] Starting medaka consensus generation" >> {log}
@@ -62,31 +67,38 @@ rule medaka_consensus_from_subreads:
         echo "[$(date '+%Y-%m-%d %H:%M:%S')] Medaka consensus generation complete" >> {log}
         """
 
+
 split_dir = "consensus_split"
+
+
 # Rule to split the parallel process fastq back into individual files
 # -----------------------------------------------------
 checkpoint split_fastq:
-    conda: "../envs/consensus.yaml"
     input:
-        batchconsensus = "consensus/bulk_consensus/consensus.fastq"
+        batchconsensus="consensus/bulk_consensus/consensus.fastq",
     output:
-        out_dir = directory(split_dir)
-    log: 
-        logf = "logs/consensus/split_fastq.log"
+        out_dir=directory(split_dir),
+    log:
+        logf="logs/consensus/split_fastq.log",
+    conda:
+        "../envs/consensus.yaml"
     script:
         "../scripts/split_fastq.py"
+
 
 # Rule to create a summary CSV with sample, sequence, and quality score columns from all consensus FASTA files
 # -----------------------------------------------------
 rule consensus_summary_csv:
-    conda: "../envs/consensus.yaml"
     input:
         # consensuses = get_split_files
-        consensuses = lambda wildcards: get_splits(wildcards, prefix="", suffix="_consensus.fastq")
+        consensuses=lambda wildcards: get_splits(
+            wildcards, prefix="", suffix="_consensus.fastq"
+        ),
     output:
-        outf = report("consensus/consensus_summary.csv", category = "consensus")
-    log: 
-        logf = "logs/consensus/consensus_summary_csv.log"
+        outf=report("consensus/consensus_summary.csv", category="consensus"),
+    log:
+        logf="logs/consensus/consensus_summary_csv.log",
+    conda:
+        "../envs/consensus.yaml"
     script:
         "../scripts/consensus_summary_csv.py"
-

@@ -20,14 +20,12 @@ include: "rules/align.smk"
 include: "rules/ab1writer.smk"
 
 
-
 # optional messages, log and error handling
 # -----------------------------------------------------
 onstart:
-    
-    #print("Available DAG attributes:", dir(workflow.dag))
+    # print("Available DAG attributes:", dir(workflow.dag))
     # This removes all .done files from the workflow run before the clean workflow begins
-    #print(workflow.dag.targetjobs)
+    # print(workflow.dag.targetjobs)
     if "clean" in str(workflow.dag.targetjobs):
         from pathlib import Path
         from os.path import join, dirname, realpath
@@ -35,12 +33,16 @@ onstart:
         here = os.getcwd()
         print(here)
         # 2. Construct the full path pattern
-        search_pattern = join(here,'.*.done')
-        search_pattern2 = join(here,'consensus_split/.*.done')
-        print(f"Searching for .done files with pattern: {search_pattern} and {search_pattern2}")
+        search_pattern = join(here, ".*.done")
+        search_pattern2 = join(here, "consensus_split/.*.done")
+        print(
+            f"Searching for .done files with pattern: {search_pattern} and {search_pattern2}"
+        )
 
-        files_to_remove = Path(here).glob('.*.done')
-        files_to_remove = list(files_to_remove) + list(Path(here).glob('consensus_split/.*.done'))
+        files_to_remove = Path(here).glob(".*.done")
+        files_to_remove = list(files_to_remove) + list(
+            Path(here).glob("consensus_split/.*.done")
+        )
         files_to_remove = [str(f) for f in files_to_remove if f.is_file()]
         # Remove flag files to force re-run of cleanup
         if files_to_remove:
@@ -51,11 +53,16 @@ onstart:
     else:
         print("\n--- Analysis started ---\n")
 
+
 onsuccess:
     print("\n--- Workflow finished! ---\n")
     print("All steps completed successfully.")
-    print("Run again with arg `--report report/1_report.html` to generate a report.")
-    print("Run again with arg 'clean' to remove intermediate files and move results to a timestamped outputs archive.")
+    print(
+        "Run again with arg `--report report/1_report.html` to generate a report."
+    )
+    print(
+        "Run again with arg 'clean' to remove intermediate files and move results to a timestamped outputs archive."
+    )
 
 
 onerror:
@@ -65,11 +72,11 @@ onerror:
 # target rules
 # -----------------------------------------------------
 rule all:
+    default_target: True
     input:
         ".demux_finished.done",
         "consensus/bulk_consensus/consensus.fastq",
         "consensus/consensus_summary.csv",
         ".coverage.done",
-        ".plot.done", #flag file
-        ".ab1_done.done"
-    default_target: True
+        ".plot.done",  #flag file
+        ".ab1_done.done",

@@ -10,18 +10,20 @@
 #
 # ---------------------------------------------------------------------------------
 
-#Demultiplexing rule using cutadapt with linked adapters
+
+# Demultiplexing rule using cutadapt with linked adapters
 # -----------------------------------------------------
 rule filter_reads_by_length:
-    conda: "../envs/demux.yaml"
     input:
-        fastq = f"sequences/{config['input_fastq']}"
+        fastq=f"sequences/{config['input_fastq']}",
     output:
-        filtered = f"sequences/filtered_{config['input_fastq']}"
-    params:
-        min_length = config["filter-size"]
+        filtered=f"sequences/filtered_{config['input_fastq']}",
     log:
-        "logs/filter/filter_reads.log"
+        "logs/filter/filter_reads.log",
+    conda:
+        "../envs/demux.yaml"
+    params:
+        min_length=config["filter-size"],
     shell:
         r"""
         echo "[$(date '+%Y-%m-%d %H:%M:%S')] Starting read length filtering" >> {log}
@@ -29,22 +31,24 @@ rule filter_reads_by_length:
         echo "[$(date '+%Y-%m-%d %H:%M:%S')] Read filtering complete" >> {log}
         """
 
-#Demultiplexing rule using cutadapt with linked adapters
+
+# Demultiplexing rule using cutadapt with linked adapters
 # -----------------------------------------------------
 rule cutadapt_demux_linked:
-    conda: "../envs/demux.yaml"
     input:
-        barcodes = use_debug(),
-        seq= f"sequences/filtered_{config['input_fastq']}"
+        barcodes=use_debug(),
+        seq=f"sequences/filtered_{config['input_fastq']}",
     output:
         # all per-sample fastqs + an explicit file for unmatched
         demux=expand("demux/{s}.fastq.gz", s=adapter_names(use_debug())),
-        unknown="demux/unknown.fastq.gz"
-    params:
-        error_rate = config['cutadapt_error_rate'],
-        min_overlap = config['cutadapt_min_overlap']
+        unknown="demux/unknown.fastq.gz",
     log:
-        "logs/cutadapt/demux.log"
+        "logs/cutadapt/demux.log",
+    conda:
+        "../envs/demux.yaml"
+    params:
+        error_rate=config["cutadapt_error_rate"],
+        min_overlap=config["cutadapt_min_overlap"],
     shell:
         r""" 
         echo "[$(date '+%Y-%m-%d %H:%M:%S')] Starting cutadapt demultiplexing" >> {log}
@@ -61,17 +65,23 @@ rule cutadapt_demux_linked:
         echo "[$(date '+%Y-%m-%d %H:%M:%S')] Cutadapt demultiplexing complete" >> {log}
         """
 
+
 # Checkpoint to count reads in each demuxed fastq.gz file and write to demux_stats.csv
 # -----------------------------------------------------
 checkpoint demux_stats:
-    conda: "../envs/demux.yaml"
     input:
-        samplefiles = expand("demux/{s}.fastq.gz", s=adapter_names(use_debug())),
-        unkfiles = "demux/unknown.fastq.gz"
+        samplefiles=expand("demux/{s}.fastq.gz", s=adapter_names(use_debug())),
+        unkfiles="demux/unknown.fastq.gz",
     output:
-        report("demux_stats.csv", category = "demux", labels={"type": "stats", "status": "Unfiltered"})
+        report(
+            "demux_stats.csv",
+            category="demux",
+            labels={"type": "stats", "status": "Unfiltered"},
+        ),
     log:
-        logf = "logs/cutadapt/demux_stats.log"
+        logf="logs/cutadapt/demux_stats.log",
+    conda:
+        "../envs/demux.yaml"
     script:
         "../scripts/demux_stats.py"
 
@@ -79,41 +89,46 @@ checkpoint demux_stats:
 # Checkpoint to count reads in each demuxed fastq.gz file and write to demux_stats.csv
 # -----------------------------------------------------
 checkpoint move_low_depth_subreads:
-    conda: "../envs/demux.yaml"
     input:
-        csv = "demux_stats.csv",
+        csv="demux_stats.csv",
     output:
-        out = (directory("demux/filtered_list"))
-    params:
-        threshold = config["min_depth"]
+        out=(directory("demux/filtered_list")),
     log:
-        logf = "logs/cutadapt/move_low_depth_subreads.log"
+        logf="logs/cutadapt/move_low_depth_subreads.log",
+    conda:
+        "../envs/demux.yaml"
+    params:
+        threshold=config["min_depth"],
     script:
         "../scripts/move_low_depth_subreads.py"
+
 
 # File system I/O
 # -----------------------------------------------------
 rule move_file:
-    conda: "../envs/demux.yaml"
     input:
-        known = "demux/{filename}.fastq.gz"
+        known="demux/{filename}.fastq.gz",
     output:
-        known = "demux/.low_depth/{filename}.fastq.gz"
+        known="demux/.low_depth/{filename}.fastq.gz",
     log:
-        "logs/cutadapt/move_{filename}.log"
+        "logs/cutadapt/move_{filename}.log",
+    conda:
+        "../envs/demux.yaml"
     shell:
         "mv {input.known} {output.known} >> {log} 2>&1"
+
 
 # Rule to finalize demultiplexing by removing placeholder files
 # -----------------------------------------------------
 rule finalize_demux:
-    conda: "../envs/demux.yaml"
     input:
-        get_moved_files
+        get_moved_files,
     output:
-        ".demux_finished.done"
+        ".demux_finished.done",
     log:
-        "logs/cutadapt/finalize_demux.log"
+        "logs/cutadapt/finalize_demux.log",
+    conda:
+        "../envs/demux.yaml"
     shell:
         """
         mv demux/unknown.fastq.gz demux/.low_depth/unknown.fastq.gz >> {log} 2>&1

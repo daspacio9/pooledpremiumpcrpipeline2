@@ -14,20 +14,25 @@
 ### Alignment to the consensus and coverage, consensus match calculation rules and plotting thereof
 # -----------------------------------------------------
 rule aln_to_consensus:
-    conda: "../envs/align.yaml"
     input:
-        consensus = lambda wildcards: [f for f in get_splits(wildcards, prefix="", suffix="_consensus.fastq") if wildcards.sample in f][0],
-        reads = "demux/{sample}.fastq.gz"
+        consensus=lambda wildcards: [
+            f
+            for f in get_splits(wildcards, prefix="", suffix="_consensus.fastq")
+            if wildcards.sample in f
+        ][0],
+        reads="demux/{sample}.fastq.gz",
     output:
-        sam = "aln/{sample}_aln.sam",
-        bam = "aln/{sample}_aln.bam",
-        sorted_bam = "aln/{sample}_aln_sorted.bam",
-        bai = "aln/{sample}_aln_sorted.bam.bai",
-        cov = "report/{sample}_coverage.txt",
-        pileup = "report/{sample}_mpileup.txt",
-        coverage_flag = touch(".coverage_{sample}.done") 
+        sam="aln/{sample}_aln.sam",
+        bam="aln/{sample}_aln.bam",
+        sorted_bam="aln/{sample}_aln_sorted.bam",
+        bai="aln/{sample}_aln_sorted.bam.bai",
+        cov="report/{sample}_coverage.txt",
+        pileup="report/{sample}_mpileup.txt",
+        coverage_flag=touch(".coverage_{sample}.done"),
     log:
-        "logs/aln/{sample}_aln.log"
+        "logs/aln/{sample}_aln.log",
+    conda:
+        "../envs/align.yaml"
     shell:
         r"""
         echo "[$(date '+%Y-%m-%d %H:%M:%S')] Starting alignment" >> {log}
@@ -52,52 +57,64 @@ rule aln_to_consensus:
 
 
 rule parse_mpileup_ref_match:
-    conda: "../envs/align.yaml"
     input:
-        "report/{sample}_mpileup.txt"
+        "report/{sample}_mpileup.txt",
     output:
-        "report/{sample}_pypileup.tsv"
+        "report/{sample}_pypileup.tsv",
     log:
-        "logs/aln/{sample}_parse_mpileup_ref_match.log"
+        "logs/aln/{sample}_parse_mpileup_ref_match.log",
+    conda:
+        "../envs/align.yaml"
     run:
         import pandas as pd
         from common import parse_mpileup
+
         df_pileup = parse_mpileup(input[0])
-        df_pileup.to_csv(output[0], sep='\t', index=False)
+        df_pileup.to_csv(output[0], sep="\t", index=False)
+
 
 rule plot_coverage:
-    conda: "../envs/align.yaml"
     input:
-        "report/{sample}_pypileup.tsv"
+        "report/{sample}_pypileup.tsv",
     output:
-        report("report/{sample}_coverage.pdf", category = "{sample}"), 
-        report("report/{sample}_mismatch_freq.pdf", category = "{sample}"),
-        plot_flag = touch(".plot_{sample}.done"), #flag file
+        report("report/{sample}_coverage.pdf", category="{sample}"),
+        report("report/{sample}_mismatch_freq.pdf", category="{sample}"),
+        plot_flag=touch(".plot_{sample}.done"),  #flag file
     log:
-        logf = "logs/aln/{sample}_plot_coverage.log"
+        logf="logs/aln/{sample}_plot_coverage.log",
+    conda:
+        "../envs/align.yaml"
     script:
         "../scripts/plot_coverage.py"
 
+
 rule coverage_done:
-    conda: "../envs/align.yaml"
     input:
-        lambda wildcards: expand(".coverage_{sample}.done", sample=get_passed_samples(wildcards))
+        lambda wildcards: expand(
+            ".coverage_{sample}.done", sample=get_passed_samples(wildcards)
+        ),
     output:
-        touch(".coverage.done")
+        touch(".coverage.done"),
     log:
-        logf = "logs/aln/coverage_done.log"
+        logf="logs/aln/coverage_done.log",
+    conda:
+        "../envs/align.yaml"
     run:
         with open(output[0], "w") as f:
             f.write("Coverage calculation completed.\n")
 
+
 rule plot_done:
-    conda: "../envs/align.yaml"
     input:
-        lambda wildcards: expand(".plot_{sample}.done", sample=get_passed_samples(wildcards))
+        lambda wildcards: expand(
+            ".plot_{sample}.done", sample=get_passed_samples(wildcards)
+        ),
     output:
-        touch(".plot.done")
+        touch(".plot.done"),
     log:
-        logf = "logs/aln/plot_done.log"
+        logf="logs/aln/plot_done.log",
+    conda:
+        "../envs/align.yaml"
     run:
         with open(output[0], "w") as f:
             f.write("Coverage plotting completed.\n")
