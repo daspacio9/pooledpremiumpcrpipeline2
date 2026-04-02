@@ -11,3 +11,5 @@ workflow/notebooks/.ipynb_checkpoints/**
 **/.Rproj.user/**
 **/.RData
 **/Rplots.pdf
+working_directori*/**
+working_directory_*/**
