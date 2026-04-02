@@ -1,4 +1,4 @@
-# Snakemake workflow: `pooledpremiumpcrpipeline2`
+# Snakemake workflow: `pooledpremiumpcrpipeline2 2.0.0`
 
 
 [![Snakemake](https://img.shields.io/badge/snakemake-≥8.0.0-brightgreen.svg)](https://snakemake.github.io)
@@ -10,10 +10,9 @@ A Snakemake workflow for demultiplex and consensus sequence generation after poo
 
 - [Snakemake workflow: `pooledpremiumpcrpipeline2`](#snakemake-workflow-name)
   - [Usage](#usage)
-  - [Deployment options](#deployment-options)
+  - [Deployment options: 'conda'](#deployment-options)
   - [Authors: 'Derek Sprayberry Aspacio'](#authors)
   - [References](#references)
-  - [TODO](#todo)
 
 ## Usage
 
@@ -22,7 +21,7 @@ Detailed information about input data and workflow configuration can also be fou
 If you use this workflow in a paper, don't forget to give credits to the authors by citing the URL of this repository or its DOI.
 
 ## Deployment options
-
+Use conda
 To run the workflow from command line, navigate to the folder where you want to clone the repository.
 ```bash
 cd path/to/location/on/your/desktop
@@ -177,14 +176,3 @@ EMBnet Journal, 17(1):10-12.
 > Cock, P. J., Chang, J. T., Chang, K. M., et al. (2009). Biopython: freely available Python tools for computational molecular biology and bioinformatics. Bioinformatics, 25(3):422-423.
 
 > Shen, W., Le, S., Li, Y., & Hu, F. (2016). SeqKit: A cross-platform and ultrafast toolkit for FASTA/Q file manipulation. PLoS ONE, 11(10):e0163962.
-
-
-
-## TODO
-
-- Replace `<owner>` and `<repo>` everywhere in the template with the correct user name/organization, and the repository name. The workflow will be automatically added to the [snakemake workflow catalog](https://snakemake.github.io/snakemake-workflow-catalog/index.html) once it is publicly available on Github.
-- Replace `<name>` with the workflow name (can be the same as `<repo>`).
-- Replace `<description>` with a description of what the workflow does.
-- Update the [deployment](#deployment-options), [authors](#authors) and [references](#references) sections.
-- Update the `README.md` badges. Add or remove badges for `conda`/`singularity`/`apptainer` usage depending on the workflow's [deployment](#deployment-options) options.
-- Do not forget to also adjust the configuration-specific `config/README.md` file.
