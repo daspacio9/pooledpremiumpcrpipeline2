@@ -1,10 +1,9 @@
 ###pipeline configuration
 
-
 min_depth: 10
 primer_consensus: cole1-primer-consensus.fasta #placed in ref/
 barcode_groups: cole1-barcode-groups-48.csv #placed in ref/
-barcodes: cole1-barcodes-48.fasta  #placed in ref/
+barcodes: cole1-barcodes-48.fasta #placed in ref/
 input_fastq: R8L89G-1-pDA260-269.fastq.gz #placed in sequences/
 medaka_spoa_threads: 8 #consensus jobs are run in n parallel threads in a single commandline call
 debug: True #use the smaller .test barcode pair reference file for faster debuggging (only runs the first 6 barcode pairs instead of all 48)

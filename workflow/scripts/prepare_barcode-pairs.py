@@ -32,6 +32,13 @@ with open(snakemake.log[0], "w") as logf:
     for index, row in barcode_groups.iterrows():
         sample = row[0]
         barcodes = row[1:].dropna().tolist()
+        
+        # Validate that each sample has exactly 2 barcodes (forward and reverse)
+        if len(barcodes) != 2:
+            error_msg = f"ERROR: Sample '{sample}' has {len(barcodes)} barcode(s), expected exactly 2 (forward and reverse). Found: {barcodes}"
+            log_msg(logf, error_msg)
+            raise ValueError(error_msg)
+        
         sample_barcodes[sample] = barcodes
         log_msg(logf, f"  Sample {sample}: barcodes {barcodes}")
     
@@ -39,6 +46,12 @@ with open(snakemake.log[0], "w") as logf:
     log_msg(logf, "Reading primer context FASTA file")
     records = list(SeqIO.parse(input1, "fasta"))
     log_msg(logf, f"Loaded {len(records)} primer record(s)")
+    
+    # Validate we have at least 2 records (forward and reverse primer contexts)
+    if len(records) < 2:
+        error_msg = f"ERROR: Expected at least 2 primer records in {input1}, but found {len(records)}"
+        log_msg(logf, error_msg)
+        raise ValueError(error_msg)
     
     # Extract the primer sequences
     f_context = str(records[0].seq)
@@ -51,6 +64,16 @@ with open(snakemake.log[0], "w") as logf:
     f_parts = [p for p in re.split(r"(?i)N+", f_context) if p]
     r_parts = [p for p in re.split(r"(?i)N+", r_context) if p]
     log_msg(logf, f"Forward flanking parts: {len(f_parts)}, Reverse flanking parts: {len(r_parts)}")
+    
+    # Validate that we extracted at least one flanking part from each primer
+    if not f_parts:
+        error_msg = f"ERROR: Forward primer context contains no flanking sequences after splitting on N positions: {f_context}"
+        log_msg(logf, error_msg)
+        raise ValueError(error_msg)
+    if not r_parts:
+        error_msg = f"ERROR: Reverse primer context contains no flanking sequences after splitting on N positions: {r_context}"
+        log_msg(logf, error_msg)
+        raise ValueError(error_msg)
     
     # Read barcode sequences from FASTA file
     log_msg(logf, "Reading barcode sequences FASTA file")

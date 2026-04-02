@@ -23,10 +23,8 @@ include: "rules/ab1writer.smk"
 # optional messages, log and error handling
 # -----------------------------------------------------
 onstart:
-    # print("Available DAG attributes:", dir(workflow.dag))
-    # This removes all .done files from the workflow run before the clean workflow begins
-    # print(workflow.dag.targetjobs)
     if "clean" in str(workflow.dag.targetjobs):
+        import os
         from pathlib import Path
         from os.path import join, dirname, realpath
 

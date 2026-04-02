@@ -24,7 +24,7 @@ with open(snakemake.log.logf, "w") as logf:
     log_msg(logf, f"Loaded {record_count} records from input file")
     log_msg(logf, f"Writing {record_count} renamed records to output file: {snakemake.output.outf}")
     
-    with open(snakemake.output.outf, "w") as fout:
+    with gzip.open(snakemake.output.outf, "wt") as fout:
         SeqIO.write(records, fout, "fastq")
     
     log_msg(logf, "Fastq to fastq subreads conversion completed successfully")
