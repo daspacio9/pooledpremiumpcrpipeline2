@@ -154,5 +154,4 @@ rule finalize_demux:
         """
         mv demux/unknown.fastq.gz demux/.low_depth/unknown.fastq.gz >> {log} 2>&1
         touch {output} >> {log} 2>&1
-        rm -r demux/filtered_list >> {log} 2>&1
         """

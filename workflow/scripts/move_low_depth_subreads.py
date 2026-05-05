@@ -30,7 +30,7 @@ with open(snakemake.log.logf, "w") as logf:
         (df['n_reads'] >= snakemake.params.threshold) & (df['sample'] != 'unknown')
     ]['sample'].tolist()
     
-    # Check if NO barcode groups pass the threshold (critical error)
+    # Check if NO barcode groups pass the threshold (common critical error)
     if len(passed_samples) == 0:
         log_msg(logf, "ERROR: No barcode groups have reads >= min_depth threshold!")
         
