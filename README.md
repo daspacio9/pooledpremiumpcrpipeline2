@@ -1,4 +1,4 @@
-# Snakemake workflow: `pooledpremiumpcrpipeline2 2.0.0`
+# Snakemake workflow: `pooledpremiumpcrpipeline2 3.0.0`
 
 
 [![Snakemake](https://img.shields.io/badge/snakemake-≥8.0.0-brightgreen.svg)](https://snakemake.github.io)
