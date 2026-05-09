@@ -1,29 +1,64 @@
 $schema: "https://json-schema.org/draft/2020-12/schema"
 description: main configuration schema for the workflow
 properties:
-  samplesheet:
+  min_depth:
+    type: number
+    description: minimum read depth threshold for consensus generation
+
+  primer_consensus:
     type: string
-    description: path to sample-sheet TSV file
+    description: path to primer consensus FASTA file (placed in ref/)
 
-  get_genome:
-    type: object
-    properties:
-      ncbi_ftp:
-        type: string
-        description: URL for genome retrieval
-    required: ["ncbi_ftp"]
+  barcode_groups:
+    type: string
+    description: path to barcode groups CSV file (placed in ref/)
 
-  simulate_reads:
-    type: object
-    properties:
-      read_length:
-        type: number
-        description: length of target reads in bp
-      read_number:
-        type: number
-        description: number of total reads to be simulated
+  barcodes:
+    type: string
+    description: path to barcodes FASTA file (placed in ref/)
+
+  input_fastq:
+    type: string
+    description: path to input FASTQ file for processing (placed in sequences/)
+
+  medaka_spoa_threads:
+    type: number
+    description: number of parallel threads for medaka consensus generation
+
+  debug:
+    type: boolean
+    description: enable debug mode
+
+  filter-size:
+    type: number
+    description: minimum read length filter (in bp) to remove short reads and adapter dimers
+
+  downsample_reads:
+    type: number
+    description: number of reads to downsample each demuxed sample to before consensus generation
+
+  cutadapt_min_overlap:
+    type: number
+    description: minimum overlap parameter for cutadapt adapter matching (in bp)
+
+  cutadapt_error_rate:
+    type: number
+    description: maximum allowed error rate for cutadapt adapter matching (0-1)
+
+  medaka_model:
+    type: string
+    description: medaka consensus polishing model identifier
 
 required:
-  - samplesheet
-  - get_genome
-  - simulate_reads
+  - min_depth
+  - primer_consensus
+  - barcode_groups
+  - barcodes
+  - input_fastq
+  - medaka_spoa_threads
+  - debug
+  - filter-size
+  - downsample_reads
+  - cutadapt_min_overlap
+  - cutadapt_error_rate
+  - medaka_model

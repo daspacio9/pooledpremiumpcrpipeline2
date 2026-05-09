@@ -83,6 +83,21 @@ rule cutadapt_demux_linked:
         echo "[$(date '+%Y-%m-%d %H:%M:%S')] Cutadapt demultiplexing complete" >> {log}
         """
 
+# Downsample each demuxed sample to [config['downsample_reads']] reads
+# -----------------------------------------------------
+rule downsample_subreads:
+    input:
+        "demux/{sample}.fastq.gz",
+    output:
+        "demux/{sample}_downsampled.fastq.gz",
+    params:
+        downsample_reads=config["downsample_reads"],
+    log:
+        "logs/demux/{sample}_downsample.log",
+    conda:
+        "../envs/demux.yaml"
+    shell:
+        "seqkit sample -n {params.downsample_reads} -s 100 {input} -o {output} 2> {log}"
 
 # Checkpoint to count reads in each demuxed fastq.gz file and write to demux_stats.csv
 # -----------------------------------------------------

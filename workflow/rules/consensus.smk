@@ -16,7 +16,7 @@
 # -----------------------------------------------------
 rule fastq_to_fastq_subreads:
     input:
-        inf="demux/{sample}.fastq.gz",
+        inf="demux/{sample}_downsampled.fastq.gz",
     output:
         outf="demux/temp/{sample}_subreads_batch.fastq.gz",
     log:
