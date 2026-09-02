@@ -51,4 +51,4 @@ jobs:
         with:
           directory: .test
           snakefile: workflow/Snakefile
-          args: "--sdm conda --show-failed-logs --cores 4 --conda-cleanup-pkgs cache --report report.zip"
+          args: "--sdm conda --show-failed-logs --cores 4 --conda-cleanup-pkgs cache --all-temp"

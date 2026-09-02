@@ -33,7 +33,7 @@ rule write_ab1:
         chunk_file="report/pileup_chunks/{sample}_pypileup_chunk_{chunk}.tsv",
     output:
         flag=touch("ab1/.ab1_{sample}_{chunk}.done"),
-        ab1_file="ab1/{sample}_{chunk}.ab1",
+        ab1_file=protected("ab1/{sample}_{chunk}.ab1"),
     log:
         logf="logs/ab1writer/{sample}_{chunk}_write_ab1.log",
     conda:
