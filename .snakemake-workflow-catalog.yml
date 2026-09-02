@@ -2,7 +2,7 @@
 
 usage:
   mandatory-flags:
-    desc: "--use-conda can be used in place of --sdm conda"
+    desc: "--use-conda can be used in place of --sdm conda. The pileline is not compatible with the --all-temp flag since this overrides protected()"
     flags: ["--sdm conda", "--cores", "--snakefile"]
     conda: true # whether pipeline works with '--sdm conda'
     apptainer: false # whether pipeline works with '--sdm apptainer/singularity'

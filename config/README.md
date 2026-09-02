@@ -63,6 +63,7 @@ sequences/
 | **filter_size** | integer | `1500` | Filters out adapter dimers and very short reads |
 | **medaka_model** | string | `r1041_e82_400bps_hac_v5.0.0` | Must match your sequencing device; this is optimized for oxford nanopore r1041 |
 | **medaka_spoa_threads** | integer | `8` | Adjust based on available CPU resources |
+| **downsample_reads** | integer | `50` | Maximum number of reads to use per barcode group. Set to 0 to disable downsampling. |
 
 ## Output Structure
 
