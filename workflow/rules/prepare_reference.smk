@@ -32,7 +32,6 @@ if str(absolute_path) not in sys.path:
     sys.path.append(absolute_path)
 
 
-
 configfile: "config/config.yaml"
 
 

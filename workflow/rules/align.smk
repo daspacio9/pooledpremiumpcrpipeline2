@@ -35,24 +35,24 @@ rule aln_to_consensus:
         "../envs/align.yaml"
     shell:
         r"""
-        echo "[$(date '+%Y-%m-%d %H:%M:%S')] Starting alignment" >> {log}
-        minimap2 -ax map-ont {input.consensus} {input.reads} > {output.sam} 2>> {log}
-        echo "[$(date '+%Y-%m-%d %H:%M:%S')] Alignment complete, converting to BAM" >> {log}
-        
-        samtools view -bo {output.bam} {output.sam} 2>> {log}
-        echo "[$(date '+%Y-%m-%d %H:%M:%S')] BAM conversion complete, sorting" >> {log}
-        
-        samtools sort {output.bam} -o {output.sorted_bam} 2>> {log}
-        echo "[$(date '+%Y-%m-%d %H:%M:%S')] Sorting complete, indexing" >> {log}
-        
-        samtools index {output.sorted_bam} 2>> {log}
-        echo "[$(date '+%Y-%m-%d %H:%M:%S')] Indexing complete, generating coverage" >> {log}
-        
-        samtools depth -a -o {output.cov} {output.sorted_bam} 2>> {log}
-        echo "[$(date '+%Y-%m-%d %H:%M:%S')] Coverage complete, generating pileup" >> {log}
-        
-        samtools mpileup -a -f {input.consensus} {output.sorted_bam} > {output.pileup} 2>> {log}
-        echo "[$(date '+%Y-%m-%d %H:%M:%S')] Alignment workflow complete" >> {log}
+        echo "[$(date '+%Y-%m-%d %H:%M:%S')] Starting alignment" >>{log}
+        minimap2 -ax map-ont {input.consensus} {input.reads} >{output.sam} 2>>{log}
+        echo "[$(date '+%Y-%m-%d %H:%M:%S')] Alignment complete, converting to BAM" >>{log}
+
+        samtools view -bo {output.bam} {output.sam} 2>>{log}
+        echo "[$(date '+%Y-%m-%d %H:%M:%S')] BAM conversion complete, sorting" >>{log}
+
+        samtools sort {output.bam} -o {output.sorted_bam} 2>>{log}
+        echo "[$(date '+%Y-%m-%d %H:%M:%S')] Sorting complete, indexing" >>{log}
+
+        samtools index {output.sorted_bam} 2>>{log}
+        echo "[$(date '+%Y-%m-%d %H:%M:%S')] Indexing complete, generating coverage" >>{log}
+
+        samtools depth -a -o {output.cov} {output.sorted_bam} 2>>{log}
+        echo "[$(date '+%Y-%m-%d %H:%M:%S')] Coverage complete, generating pileup" >>{log}
+
+        samtools mpileup -a -f {input.consensus} {output.sorted_bam} >{output.pileup} 2>>{log}
+        echo "[$(date '+%Y-%m-%d %H:%M:%S')] Alignment workflow complete" >>{log}
         """
 
 

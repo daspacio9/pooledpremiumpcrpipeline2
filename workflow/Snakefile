@@ -36,7 +36,6 @@ onstart:
         print(
             f"Searching for .done files with pattern: {search_pattern} and {search_pattern2}"
         )
-
         files_to_remove = Path(here).glob(".*.done")
         files_to_remove = list(files_to_remove) + list(
             Path(here).glob("consensus_split/.*.done")

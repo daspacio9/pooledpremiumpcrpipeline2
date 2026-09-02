@@ -26,9 +26,9 @@ rule filter_reads_by_length:
         min_length=config["filter-size"],
     shell:
         r"""
-        echo "[$(date '+%Y-%m-%d %H:%M:%S')] Starting read length filtering" >> {log}
-        seqkit seq -m {params.min_length} {input.fastq} 2>> {log} | gzip -c > {output.filtered}
-        echo "[$(date '+%Y-%m-%d %H:%M:%S')] Read filtering complete" >> {log}
+        echo "[$(date '+%Y-%m-%d %H:%M:%S')] Starting read length filtering" >>{log}
+        seqkit seq -m {params.min_length} {input.fastq} 2>>{log} | gzip -c >{output.filtered}
+        echo "[$(date '+%Y-%m-%d %H:%M:%S')] Read filtering complete" >>{log}
         """
 
 
@@ -68,20 +68,21 @@ rule cutadapt_demux_linked:
         error_rate=config["cutadapt_error_rate"],
         min_overlap=config["cutadapt_min_overlap"],
     shell:
-        r""" 
-        echo "[$(date '+%Y-%m-%d %H:%M:%S')] Starting cutadapt demultiplexing" >> {log}
+        r"""
+        echo "[$(date '+%Y-%m-%d %H:%M:%S')] Starting cutadapt demultiplexing" >>{log}
         cutadapt \
-          -g file:{input.barcodes} \
-          --revcomp \
-          -e {params.error_rate} \
-          -O {params.min_overlap} \
-          --action=none \
-          -o demux/{{name}}.fastq.gz \
-          --untrimmed-output {output.unknown} \
-          {input.seq} \
-        >> {log} 2>&1
-        echo "[$(date '+%Y-%m-%d %H:%M:%S')] Cutadapt demultiplexing complete" >> {log}
+            -g file:{input.barcodes} \
+            --revcomp \
+            -e {params.error_rate} \
+            -O {params.min_overlap} \
+            --action=none \
+            -o demux/{{name}}.fastq.gz \
+            --untrimmed-output {output.unknown} \
+            {input.seq} \
+            >>{log} 2>&1
+        echo "[$(date '+%Y-%m-%d %H:%M:%S')] Cutadapt demultiplexing complete" >>{log}
         """
+
 
 # Downsample each demuxed sample to [config['downsample_reads']] reads
 # -----------------------------------------------------
@@ -90,14 +91,15 @@ rule downsample_subreads:
         "demux/{sample}.fastq.gz",
     output:
         "demux/{sample}_downsampled.fastq.gz",
-    params:
-        downsample_reads=config["downsample_reads"],
     log:
         "logs/demux/{sample}_downsample.log",
     conda:
         "../envs/demux.yaml"
+    params:
+        downsample_reads=config["downsample_reads"],
     shell:
         "seqkit sample -n {params.downsample_reads} -s 100 {input} -o {output} 2> {log}"
+
 
 # Checkpoint to count reads in each demuxed fastq.gz file and write to demux_stats.csv
 # -----------------------------------------------------
@@ -167,6 +169,6 @@ rule finalize_demux:
         "../envs/demux.yaml"
     shell:
         """
-        mv demux/unknown.fastq.gz demux/.low_depth/unknown.fastq.gz >> {log} 2>&1
-        touch {output} >> {log} 2>&1
+        mv demux/unknown.fastq.gz demux/.low_depth/unknown.fastq.gz >>{log} 2>&1
+        touch {output} >>{log} 2>&1
         """

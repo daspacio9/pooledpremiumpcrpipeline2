@@ -15,5 +15,11 @@ working_directori*/**
 working_directory_*/**
 *.7z
 .test/2026*
-/workflow/scripts/__*.pyc
+/workflow/scripts/__*
 *.Identifier
+nanoplotting/**
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python

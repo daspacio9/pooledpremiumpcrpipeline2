@@ -36,7 +36,7 @@ rule medaka_consensus_from_subreads:
         fastas=expand(
             "demux/temp/{sample}_subreads_batch.fastq.gz", sample=get_passed_samples
         ),
-        check="demux/filtered_list"  # Require checkpoint output
+        check="demux/filtered_list",  # Require checkpoint output
     output:
         outDir=(directory("consensus/bulk_consensus")),
         consensus="consensus/bulk_consensus/consensus.fastq",
@@ -50,10 +50,10 @@ rule medaka_consensus_from_subreads:
         medaka_model=config["medaka_model"],
     shell:
         r"""
-        echo "[$(date '+%Y-%m-%d %H:%M:%S')] Starting medaka consensus generation" >> {log}
-        rm -rf {output.outDir} >> {log} 2>&1
-        
-        echo "[$(date '+%Y-%m-%d %H:%M:%S')] Running medaka smolecule" >> {log}
+        echo "[$(date '+%Y-%m-%d %H:%M:%S')] Starting medaka consensus generation" >>{log}
+        rm -rf {output.outDir} >>{log} 2>&1
+
+        echo "[$(date '+%Y-%m-%d %H:%M:%S')] Running medaka smolecule" >>{log}
         medaka smolecule \
             {output.outDir} \
             {input.fastas} \
@@ -64,8 +64,8 @@ rule medaka_consensus_from_subreads:
             --batch_size 20 \
             --model {params.medaka_model} \
             --spoa_min_coverage {params.min_depth} \
-        >> {log} 2>&1
-        echo "[$(date '+%Y-%m-%d %H:%M:%S')] Medaka consensus generation complete" >> {log}
+            >>{log} 2>&1
+        echo "[$(date '+%Y-%m-%d %H:%M:%S')] Medaka consensus generation complete" >>{log}
         """
 
 
