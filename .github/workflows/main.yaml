@@ -15,7 +15,7 @@ jobs:
   Formatting:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@latest
+      - uses: actions/checkout@v2
         with:
           fetch-depth: 0
       - name: Formatting
@@ -30,7 +30,7 @@ jobs:
   Linting:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@latest
+      - uses: actions/checkout@v2
       - name: Lint workflow
         uses: snakemake/snakemake-github-action@latest
         with:
@@ -44,7 +44,7 @@ jobs:
       - Linting
       - Formatting
     steps:
-      - uses: actions/checkout@latest
+      - uses: actions/checkout@v2
 
       - name: Test workflow
         uses: snakemake/snakemake-github-action@latest
