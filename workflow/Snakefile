@@ -54,9 +54,7 @@ onstart:
 onsuccess:
     print("\n--- Workflow finished! ---\n")
     print("All steps completed successfully.")
-    print(
-        "Run again with arg `--report report/1_report.html` to generate a report."
-    )
+    print("Run again with arg `--report report/1_report.html` to generate a report.")
     print(
         "Run again with arg 'clean' to remove intermediate files and move results to a timestamped outputs archive."
     )
