@@ -126,6 +126,8 @@ rule qc_warnings_summary:
         touch(".qc_warnings_printed.done"),
     log:
         logf="logs/aln/qc_warnings_summary.log",
+    conda:
+        "../envs/align.yaml"
     shell:
         """
         echo "========== QC SUMMARY REPORT ==========" >&2
