@@ -57,7 +57,6 @@ onsuccess:
 
     print("\n--- Workflow finished! ---\n")
     print("All steps completed successfully.")
-
     # Read and display QC warnings summary
     print("\n========== QC SUMMARY REPORT ==========")
     warning_files = list(Path("report").glob("*_qc_warnings.txt"))
@@ -68,7 +67,6 @@ onsuccess:
     else:
         print("No QC warning files found.")
     print("======================================\n")
-
     print(
         "Run again with arg `--report report/1_report.html` to generate a report."
     )
