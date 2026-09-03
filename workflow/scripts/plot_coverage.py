@@ -85,6 +85,17 @@ with open(snakemake.log.logf, "w") as logf:
             msg = f"  • High mismatch (>30%): {num_high_mismatch} bases"
             print_colored(msg)
             log_msg(logf, msg)
+    # Write warnings to a summary file for final reporting
+    warnings_file = f"report/{snakemake.wildcards.sample}_qc_warnings.txt"
+    with open(warnings_file, "w") as wf:
+        if num_low_coverage > 0 or num_high_mismatch > 0:
+            wf.write(f"{PURPLE}QC WARNINGS for {sample_name}:{RESET}\n")
+            if num_low_coverage > 0:
+                wf.write(f"{PURPLE}  • Low coverage (<20%): {num_low_coverage} bases{RESET}\n")
+            if num_high_mismatch > 0:
+                wf.write(f"{PURPLE}  • High mismatch (>30%): {num_high_mismatch} bases{RESET}\n")
+        else:
+            wf.write(f"{PURPLE}PASS: {sample_name} - No QC warnings{RESET}\n")
 
     with open(snakemake.output.plot_flag, "w") as _f:
         _f.write("Plotting completed.\n")
