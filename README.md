@@ -5,6 +5,7 @@
 [![GitHub license](https://img.shields.io/github/license/daspacio9/pooledpremiumpcrpipeline2)](https://github.com/daspacio9/pooledpremiumpcrpipeline2/blob/main/LICENSE)
 [![run with conda](http://img.shields.io/badge/run%20with-conda-3EB049?labelColor=000000&logo=anaconda)](https://docs.conda.io/en/latest/)
 [![workflow catalog](https://img.shields.io/badge/Snakemake%20workflow%20catalog-darkgreen)](https://snakemake.github.io/snakemake-workflow-catalog/docs/workflows/daspacio9/pooledpremiumpcrpipeline2)
+[![Ask DeepWiki](https://deepwiki.com/badge.svg)](https://deepwiki.com/daspacio9/pooledpremiumpcrpipeline2)
 
 A Snakemake workflow for demultiplex and consensus sequence generation after pooling barcoded samples for the plasmidsaurus premium pcr service
 
@@ -17,7 +18,7 @@ A Snakemake workflow for demultiplex and consensus sequence generation after poo
 ## Usage
 
 The usage of this workflow is described in the [Snakemake Workflow Catalog](https://snakemake.github.io/snakemake-workflow-catalog/docs/workflows/daspacio9/pooledpremiumpcrpipeline2).
-Detailed information about input data and workflow configuration can also be found in the [`config/README.md`](config/README.md). 
+Detailed information about input data and workflow configuration can also be found in the [`config/README.md`](config/README.md) or interactively by following link in the deepwiki badge above.
 If you use this workflow in a paper, don't forget to give credits to the authors by citing the URL of this repository or its DOI.
 
 ## Deployment options
