@@ -6,7 +6,7 @@ import pandas as pd
 import matplotlib
 matplotlib.use('Agg')
 import matplotlib.pyplot as plt
-from common import log_msg log_warning print_colored RESET PURPLE
+from common import log_msg, log_warning, print_colored, RESET, PURPLE
 import sys
 
 with open(snakemake.log.logf, "w") as logf:
