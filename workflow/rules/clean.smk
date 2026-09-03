@@ -36,7 +36,7 @@ config["timestamp"] = datetime.now().strftime("%Y_%m_%d-%H%M%S")
 # -----------------------------------------------------
 rule make_pppp_output_dir:
     output:
-        touch(".make_pppp_output_dir.done"),  # changed: consistent touch filename
+        touch(".make_pppp_output_dir.done"),
     log:
         "cleanlogs/make_pppp_output_dir.log",
     conda:
@@ -45,6 +45,7 @@ rule make_pppp_output_dir:
         timestampDir=lambda wildcards: config["timestamp"] + "-ppppOutputs",
     shell:
         """
+        mkdir -p cleanlogs
         echo "[$(date '+%Y-%m-%d %H:%M:%S')] Creating output directory" >>{log}
         mkdir -p {params.timestampDir} >>{log} 2>&1
         echo "[$(date '+%Y-%m-%d %H:%M:%S')] Output directory created" >>{log}
