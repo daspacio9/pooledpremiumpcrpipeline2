@@ -52,8 +52,23 @@ onstart:
 
 
 onsuccess:
+    import os
+    from pathlib import Path
+
     print("\n--- Workflow finished! ---\n")
     print("All steps completed successfully.")
+
+    # Read and display QC warnings summary
+    print("\n========== QC SUMMARY REPORT ==========")
+    warning_files = list(Path("report").glob("*_qc_warnings.txt"))
+    if warning_files:
+        for wf in sorted(warning_files):
+            with open(wf, "r") as f:
+                print(f.read())
+    else:
+        print("No QC warning files found.")
+    print("======================================\n")
+
     print(
         "Run again with arg `--report report/1_report.html` to generate a report."
     )
