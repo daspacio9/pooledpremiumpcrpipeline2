@@ -86,8 +86,8 @@ with open(snakemake.log.logf, "w") as logf:
             print_colored(msg)
             log_msg(logf, msg)
     # Write warnings to a summary file for final reporting
-    warnings_file = f"report/{snakemake.wildcards.sample}_qc_warnings.txt"
-    with open(warnings_file, "w") as wf:
+    
+    with open(snakemake.output.warnings_file, "w") as wf:
         if num_low_coverage > 0 or num_high_mismatch > 0:
             wf.write(f"{PURPLE}QC WARNINGS for {sample_name}:{RESET}\n")
             if num_low_coverage > 0:

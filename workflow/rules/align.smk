@@ -75,6 +75,7 @@ rule plot_coverage:
     output:
         report("report/{sample}_coverage.pdf", category="{sample}"),
         report("report/{sample}_mismatch_freq.pdf", category="{sample}"),
+        warnings_file="report/{sample}_qc_warnings.txt",  #warnings file storage
         plot_flag=touch(".plot_{sample}.done"),  #flag file
     log:
         logf="logs/aln/{sample}_plot_coverage.log",
@@ -114,3 +115,18 @@ rule plot_done:
     run:
         with open(output[0], "w") as f:
             f.write("Coverage plotting completed.\n")
+
+
+rule qc_warnings_summary:
+    input:
+        lambda wildcards: expand(
+            "report/{sample}_qc_warnings.txt", sample=get_passed_samples(wildcards)
+        ),
+    output:
+        touch(".qc_warnings_printed.done"),
+    shell:
+        """
+        echo "========== QC SUMMARY REPORT ==========" >&2
+        cat {input} >&2
+        echo "======================================" >&2
+        """

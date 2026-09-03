@@ -77,4 +77,4 @@ rule all:
         ".coverage.done",
         ".plot.done",  #flag file
         ".ab1_done.done",
-        ".qc_warnings_printed.done", #Repeat all of the QC warnings to the terminal for easy viewing in purple
+        ".qc_warnings_printed.done",  #Repeat all of the QC warnings to the terminal for easy viewing in purple
