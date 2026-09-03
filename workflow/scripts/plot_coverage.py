@@ -7,6 +7,14 @@ import matplotlib
 matplotlib.use('Agg')
 import matplotlib.pyplot as plt
 from common import log_msg
+import sys
+
+PURPLE = '\033[35m'
+RESET = '\033[0m'
+def print_colored(message, color=PURPLE, file=sys.stdout):
+    """Print colored message to terminal and return the message for logging"""
+    print(f"{color}{message}{RESET}", file=file)
+    return message
 
 with open(snakemake.log.logf, "w") as logf:
     log_msg(logf, f"Starting coverage plot generation for sample: {snakemake.wildcards.sample}")
@@ -52,6 +60,37 @@ with open(snakemake.log.logf, "w") as logf:
     plt.savefig(snakemake.output[1])
     plt.close()
     log_msg(logf, "Mismatch frequency plot generated successfully")
+
+        
+    # Identify quality issues
+    low_coverage_threshold = df_ref['coverage'].max() * 0.5  # or use fixed value like 50
+    high_mismatch_threshold = 0.30
+
+    low_coverage_positions = df_ref[df_ref['coverage'] < low_coverage_threshold]
+    high_mismatch_positions = df_ref[df_ref['freq_mismatch'] > high_mismatch_threshold]
+
+    num_low_coverage = len(low_coverage_positions)
+    num_high_mismatch = len(high_mismatch_positions)
+
+    # Extract barcode group from sample name (adjust pattern based on your naming)
+    sample_name = snakemake.wildcards.sample
+    # Example: if sample is "group-C1" extract "C1" or map from config
+
+    # Create warning messages
+    if num_low_coverage > 0 or num_high_mismatch > 0:
+        warning_msg = f"⚠ QC WARNINGS for {sample_name}:"
+        print_colored(warning_msg)
+        log_msg(logf, warning_msg)
+        
+        if num_low_coverage > 0:
+            msg = f"  • Low coverage (<50%): {num_low_coverage} bases"
+            print_colored(msg)
+            log_msg(logf, msg)
+            
+        if num_high_mismatch > 0:
+            msg = f"  • High mismatch (>30%): {num_high_mismatch} bases"
+            print_colored(msg)
+            log_msg(logf, msg)
 
     with open(snakemake.output.plot_flag, "w") as _f:
         _f.write("Plotting completed.\n")
