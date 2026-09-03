@@ -94,8 +94,6 @@ with open(snakemake.log.logf, "w") as logf:
                 wf.write(f"{PURPLE}  • Low coverage (<20%): {num_low_coverage} bases{RESET}\n")
             if num_high_mismatch > 0:
                 wf.write(f"{PURPLE}  • High mismatch (>30%): {num_high_mismatch} bases{RESET}\n")
-        else:
-            wf.write(f"{PURPLE}PASS: {sample_name} - No QC warnings{RESET}\n")
 
     with open(snakemake.output.plot_flag, "w") as _f:
         _f.write("Plotting completed.\n")
