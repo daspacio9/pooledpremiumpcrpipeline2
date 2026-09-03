@@ -1,8 +1,8 @@
-# Snakemake workflow: `pooledpremiumpcrpipeline2 4.0.1`
+# Snakemake workflow: `pooledpremiumpcrpipeline2 4.0.2`
 
 
 [![Snakemake](https://img.shields.io/badge/snakemake-≥8.0.0-brightgreen.svg)](https://snakemake.github.io)
-[![GitHub actions status](https://github.com/daspacio9/pooledpremiumpcrpipeline2/workflows/Tests/badge.svg?branch=main)](https://github.com/daspacio9/pooledpremiumpcrpipeline2/actions/workflows/main.yaml)
+[![GitHub license](https://img.shields.io/github/license/daspacio9/pooledpremiumpcrpipeline2)](https://github.com/daspacio9/pooledpremiumpcrpipeline2/LICENSE)
 [![run with conda](http://img.shields.io/badge/run%20with-conda-3EB049?labelColor=000000&logo=anaconda)](https://docs.conda.io/en/latest/)
 [![workflow catalog](https://img.shields.io/badge/Snakemake%20workflow%20catalog-darkgreen)](https://snakemake.github.io/snakemake-workflow-catalog/docs/workflows/daspacio9/pooledpremiumpcrpipeline2)
 
