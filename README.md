@@ -2,7 +2,7 @@
 
 
 [![Snakemake](https://img.shields.io/badge/snakemake-≥8.0.0-brightgreen.svg)](https://snakemake.github.io)
-[![GitHub license](https://img.shields.io/github/license/daspacio9/pooledpremiumpcrpipeline2)](https://github.com/daspacio9/pooledpremiumpcrpipeline2/LICENSE)
+[![GitHub license](https://img.shields.io/github/license/daspacio9/pooledpremiumpcrpipeline2)](https://github.com/daspacio9/pooledpremiumpcrpipeline2/blob/main/LICENSE)
 [![run with conda](http://img.shields.io/badge/run%20with-conda-3EB049?labelColor=000000&logo=anaconda)](https://docs.conda.io/en/latest/)
 [![workflow catalog](https://img.shields.io/badge/Snakemake%20workflow%20catalog-darkgreen)](https://snakemake.github.io/snakemake-workflow-catalog/docs/workflows/daspacio9/pooledpremiumpcrpipeline2)
 
