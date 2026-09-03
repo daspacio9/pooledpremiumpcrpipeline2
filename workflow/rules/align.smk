@@ -124,6 +124,8 @@ rule qc_warnings_summary:
         ),
     output:
         touch(".qc_warnings_printed.done"),
+    log:
+        logf="logs/aln/qc_warnings_summary.log",
     shell:
         """
         echo "========== QC SUMMARY REPORT ==========" >&2
