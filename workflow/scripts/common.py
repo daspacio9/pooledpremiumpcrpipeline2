@@ -1,7 +1,9 @@
+import sys
+
 import pandas as pd
 import re
 from datetime import datetime
-
+from snakemake.logging import logger
 
 def log_msg(logf, message):
     """Helper to write timestamped messages to log file"""
@@ -9,6 +11,17 @@ def log_msg(logf, message):
     logf.write(f"[{timestamp}] {message}\n")
     logf.flush()
 
+def log_warning(message):
+    """Log warning that shows even in quiet mode"""
+    logger.warning(message)
+
+PURPLE = '\033[35m'
+RESET = '\033[0m'
+
+def print_colored(message, color=PURPLE, file=sys.stdout):
+    """Print colored message to terminal and return the message for logging"""
+    print(f"{color}{message}{RESET}", file=file)
+    return message
 
 def now():
     """Return the current date and time as a string formatted as YY-MM-DD-HH-MM-SS."""

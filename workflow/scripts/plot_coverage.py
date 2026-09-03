@@ -6,15 +6,8 @@ import pandas as pd
 import matplotlib
 matplotlib.use('Agg')
 import matplotlib.pyplot as plt
-from common import log_msg
+from common import log_msg log_warning print_colored RESET PURPLE
 import sys
-
-PURPLE = '\033[35m'
-RESET = '\033[0m'
-def print_colored(message, color=PURPLE, file=sys.stdout):
-    """Print colored message to terminal and return the message for logging"""
-    print(f"{color}{message}{RESET}", file=file)
-    return message
 
 with open(snakemake.log.logf, "w") as logf:
     log_msg(logf, f"Starting coverage plot generation for sample: {snakemake.wildcards.sample}")
@@ -63,7 +56,7 @@ with open(snakemake.log.logf, "w") as logf:
 
         
     # Identify quality issues
-    low_coverage_threshold = df_ref['coverage'].max() * 0.5  # or use fixed value like 50
+    low_coverage_threshold = df_ref['coverage'].max() * 0.2  # or use fixed value like 50
     high_mismatch_threshold = 0.30
 
     low_coverage_positions = df_ref[df_ref['coverage'] < low_coverage_threshold]
@@ -79,11 +72,12 @@ with open(snakemake.log.logf, "w") as logf:
     # Create warning messages
     if num_low_coverage > 0 or num_high_mismatch > 0:
         warning_msg = f"⚠ QC WARNINGS for {sample_name}:"
+        log_warning(f"{PURPLE}⚠ QC WARNINGS for {sample_name}:{RESET}")
         print_colored(warning_msg)
         log_msg(logf, warning_msg)
         
         if num_low_coverage > 0:
-            msg = f"  • Low coverage (<50%): {num_low_coverage} bases"
+            msg = f"  • Low coverage (<20%): {num_low_coverage} bases"
             print_colored(msg)
             log_msg(logf, msg)
             
