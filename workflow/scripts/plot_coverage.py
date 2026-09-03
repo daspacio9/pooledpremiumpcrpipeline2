@@ -6,7 +6,8 @@ import pandas as pd
 import matplotlib
 matplotlib.use('Agg')
 import matplotlib.pyplot as plt
-from common import log_msg
+from common import log_msg, log_warning, print_colored, RESET, PURPLE
+import sys
 
 with open(snakemake.log.logf, "w") as logf:
     log_msg(logf, f"Starting coverage plot generation for sample: {snakemake.wildcards.sample}")
@@ -52,6 +53,47 @@ with open(snakemake.log.logf, "w") as logf:
     plt.savefig(snakemake.output[1])
     plt.close()
     log_msg(logf, "Mismatch frequency plot generated successfully")
+
+        
+    # Identify quality issues
+    low_coverage_threshold = df_ref['coverage'].max() * 0.2  # or use fixed value like 50
+    high_mismatch_threshold = 0.30
+
+    low_coverage_positions = df_ref[df_ref['coverage'] < low_coverage_threshold]
+    high_mismatch_positions = df_ref[df_ref['freq_mismatch'] > high_mismatch_threshold]
+
+    num_low_coverage = len(low_coverage_positions)
+    num_high_mismatch = len(high_mismatch_positions)
+
+    # Extract barcode group from sample name (adjust pattern based on your naming)
+    sample_name = snakemake.wildcards.sample
+    # Example: if sample is "group-C1" extract "C1" or map from config
+
+    # Create warning messages
+    if num_low_coverage > 0 or num_high_mismatch > 0:
+        warning_msg = f"⚠ QC WARNINGS for {sample_name}:"
+        log_warning(f"{PURPLE}⚠ QC WARNINGS for {sample_name}:{RESET}")
+        print_colored(warning_msg)
+        log_msg(logf, warning_msg)
+        
+        if num_low_coverage > 0:
+            msg = f"  • Low coverage (<20%): {num_low_coverage} bases"
+            print_colored(msg)
+            log_msg(logf, msg)
+            
+        if num_high_mismatch > 0:
+            msg = f"  • High mismatch (>30%): {num_high_mismatch} bases"
+            print_colored(msg)
+            log_msg(logf, msg)
+    # Write warnings to a summary file for final reporting
+    
+    with open(snakemake.output.warnings_file, "w") as wf:
+        if num_low_coverage > 0 or num_high_mismatch > 0:
+            wf.write(f"{PURPLE}QC WARNINGS for {sample_name}:{RESET}\n")
+            if num_low_coverage > 0:
+                wf.write(f"{PURPLE}  • Low coverage (<20%): {num_low_coverage} bases{RESET}\n")
+            if num_high_mismatch > 0:
+                wf.write(f"{PURPLE}  • High mismatch (>30%): {num_high_mismatch} bases{RESET}\n")
 
     with open(snakemake.output.plot_flag, "w") as _f:
         _f.write("Plotting completed.\n")

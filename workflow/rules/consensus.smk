@@ -96,7 +96,7 @@ rule consensus_summary_csv:
             wildcards, prefix="", suffix="_consensus.fastq"
         ),
     output:
-        outf=protected(report("consensus/consensus_summary.csv", category="consensus")),
+        outf=report("consensus/consensus_summary.csv", category="consensus"),
     log:
         logf="logs/consensus/consensus_summary_csv.log",
     conda:

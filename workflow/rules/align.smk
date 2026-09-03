@@ -24,10 +24,10 @@ rule aln_to_consensus:
     output:
         sam="aln/{sample}_aln.sam",
         bam="aln/{sample}_aln.bam",
-        sorted_bam=protected("aln/{sample}_aln_sorted.bam"),
-        bai=protected("aln/{sample}_aln_sorted.bam.bai"),
-        cov=protected("report/{sample}_coverage.txt"),
-        pileup=protected("report/{sample}_mpileup.txt"),
+        sorted_bam="aln/{sample}_aln_sorted.bam",
+        bai="aln/{sample}_aln_sorted.bam.bai",
+        cov="report/{sample}_coverage.txt",
+        pileup="report/{sample}_mpileup.txt",
         coverage_flag=touch(".coverage_{sample}.done"),
     log:
         "logs/aln/{sample}_aln.log",
@@ -60,7 +60,7 @@ rule parse_mpileup_ref_match:
     input:
         "report/{sample}_mpileup.txt",
     output:
-        protected("report/{sample}_pypileup.tsv"),
+        "report/{sample}_pypileup.tsv",
     log:
         logf="logs/aln/{sample}_parse_mpileup_ref_match.log",
     conda:
@@ -73,8 +73,9 @@ rule plot_coverage:
     input:
         "report/{sample}_pypileup.tsv",
     output:
-        protected(report("report/{sample}_coverage.pdf", category="{sample}")),
-        protected(report("report/{sample}_mismatch_freq.pdf", category="{sample}")),
+        report("report/{sample}_coverage.pdf", category="{sample}"),
+        report("report/{sample}_mismatch_freq.pdf", category="{sample}"),
+        warnings_file="report/{sample}_qc_warnings.txt",  #warnings file storage
         plot_flag=touch(".plot_{sample}.done"),  #flag file
     log:
         logf="logs/aln/{sample}_plot_coverage.log",
@@ -114,3 +115,22 @@ rule plot_done:
     run:
         with open(output[0], "w") as f:
             f.write("Coverage plotting completed.\n")
+
+
+rule qc_warnings_summary:
+    input:
+        lambda wildcards: expand(
+            "report/{sample}_qc_warnings.txt", sample=get_passed_samples(wildcards)
+        ),
+    output:
+        touch(".qc_warnings_printed.done"),
+    log:
+        logf="logs/aln/qc_warnings_summary.log",
+    conda:
+        "../envs/align.yaml"
+    shell:
+        """
+        echo "========== QC SUMMARY REPORT ==========" >&2
+        cat {input} >&2
+        echo "======================================" >&2
+        """
