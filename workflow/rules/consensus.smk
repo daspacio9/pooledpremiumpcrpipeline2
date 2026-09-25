@@ -39,7 +39,7 @@ rule medaka_consensus_from_subreads:
         check="demux/filtered_list",  # Require checkpoint output
     output:
         outDir=temp(directory("consensus/bulk_consensus")),
-        consensus=temp("consensus/bulk_consensus/consensus.fastq"),
+        consensus="consensus/bulk_consensus/consensus.fastq",
     log:
         "logs/consensus/bulk_consensus.log",
     conda:
