@@ -26,8 +26,8 @@ with open(snakemake.log[0], 'w') as logf:
     for i, chunk_start in enumerate(range(0, len(df), chunk_size)):
         chunk_end = min(chunk_start + chunk_size, len(df))
         df_chunk = df.iloc[chunk_start:chunk_end]
-        chunk_file = f"{chunks_dir}/{snakemake.wildcards.sample}_pypileup_chunk_{i}.tsv"
-        df_chunk.to_csv(chunk_file, sep='\t', index=False)
+        chunk_file = f"{chunks_dir}/{snakemake.wildcards.sample}_pypileup_chunk_{i}.tsv.gz"
+        df_chunk.to_csv(chunk_file, sep='\t', index=False, compression='gzip')
         log_msg(logf, f"  Chunk {i}: rows {chunk_start}-{chunk_end} ({len(df_chunk)} rows) -> {chunk_file}")
         num_chunks = i + 1
     

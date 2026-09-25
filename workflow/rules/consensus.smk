@@ -18,7 +18,7 @@ rule fastq_to_fastq_subreads:
     input:
         inf="demux/{sample}_downsampled.fastq.gz",
     output:
-        outf="demux/temp/{sample}_subreads_batch.fastq.gz",
+        outf=temp("demux/temp/{sample}_subreads_batch.fastq.gz"),
     log:
         logf="logs/consensus/{sample}_fastq_to_fastq_subreads.log",
     conda:
@@ -38,8 +38,8 @@ rule medaka_consensus_from_subreads:
         ),
         check="demux/filtered_list",  # Require checkpoint output
     output:
-        outDir=(directory("consensus/bulk_consensus")),
-        consensus="consensus/bulk_consensus/consensus.fastq",
+        outDir=temp(directory("consensus/bulk_consensus")),
+        consensus=temp("consensus/bulk_consensus/consensus.fastq"),
     log:
         "logs/consensus/bulk_consensus.log",
     conda:

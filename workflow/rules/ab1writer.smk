@@ -14,7 +14,7 @@
 # -----------------------------------------------------
 checkpoint chunk_pypileup:
     input:
-        "report/{sample}_pypileup.tsv",
+        "report/{sample}_pypileup.tsv.gz",
     output:
         chunk_flag=touch("report/.chunks_{sample}.done"),
     log:
@@ -30,7 +30,7 @@ checkpoint chunk_pypileup:
 rule write_ab1:
     input:
         chunk_flag="report/.chunks_{sample}.done",
-        chunk_file="report/pileup_chunks/{sample}_pypileup_chunk_{chunk}.tsv",
+        chunk_file="report/pileup_chunks/{sample}_pypileup_chunk_{chunk}.tsv.gz",
     output:
         flag=touch("ab1/.ab1_{sample}_{chunk}.done"),
         ab1_file="ab1/{sample}_{chunk}.ab1",

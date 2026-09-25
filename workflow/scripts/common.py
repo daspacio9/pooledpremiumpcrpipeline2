@@ -1,9 +1,11 @@
 import sys
-
 import pandas as pd
 import re
 from datetime import datetime
 from snakemake.logging import logger
+import struct
+import math
+from snakemake.io import glob_wildcards
 
 def log_msg(logf, message):
     """Helper to write timestamped messages to log file"""
@@ -27,12 +29,9 @@ def now():
     """Return the current date and time as a string formatted as YY-MM-DD-HH-MM-SS."""
     return datetime.now().strftime("%y-%m-%d-%H%M%S")
 
-
 def reverse_complement(seq):
             comp = str.maketrans("ACGTNacgtn", "TGCANtgcan")
             return seq.translate(comp)[::-1]
-
-
 
 def parse_reads_row(read_str, ref_base):
     """Parse the complex pileup read string for a single row."""
@@ -93,15 +92,6 @@ def parse_mpileup(file_path):
         mpileup_df.at[row_index, 'ref_match'] = read_counts.get('ref_match', 0)
 
     return mpileup_df
-
-
-# Example usage with your pileup file
-
-# df_pileup = parse_mpileup('cole1-group-C1_mpileup.txt')
-# df_pileup.to_csv("cole1-group-C1_pypileup.tsv", sep='\t', index=False)
-
-import struct
-import math
 
 class AbifWriter:
     def __init__(self, filename):
@@ -266,5 +256,7 @@ def generate_trace(df, seq):
         
         a[peak_idx-1] = g[peak_idx-1] = c[peak_idx-1] = t[peak_idx-1] = val_side
     return {'G': g, 'A': a, 'T': t, 'C': c}
-# 3. Write
-#write_ab1("generated_from_scratch.ab1", test_seq, g, a, t, c)
+
+# g_chunks = glob_wildcards(
+#     f"report/pileup_chunks/{sample}_pypileup_chunk_{{chunk}}.tsv.gz"  # Add .gz
+# )

@@ -22,12 +22,11 @@ rule aln_to_consensus:
         ][0],
         reads="demux/{sample}.fastq.gz",
     output:
-        sam="aln/{sample}_aln.sam",
-        bam="aln/{sample}_aln.bam",
+        bam=temp("aln/{sample}_aln.bam"),
         sorted_bam="aln/{sample}_aln_sorted.bam",
         bai="aln/{sample}_aln_sorted.bam.bai",
-        cov="report/{sample}_coverage.txt",
-        pileup="report/{sample}_mpileup.txt",
+        cov=temp("report/{sample}_coverage.txt"),
+        pileup=temp("report/{sample}_mpileup.txt"),
         coverage_flag=touch(".coverage_{sample}.done"),
     log:
         "logs/aln/{sample}_aln.log",
@@ -36,11 +35,8 @@ rule aln_to_consensus:
     shell:
         r"""
         echo "[$(date '+%Y-%m-%d %H:%M:%S')] Starting alignment" >>{log}
-        minimap2 -ax map-ont {input.consensus} {input.reads} >{output.sam} 2>>{log}
-        echo "[$(date '+%Y-%m-%d %H:%M:%S')] Alignment complete, converting to BAM" >>{log}
-
-        samtools view -bo {output.bam} {output.sam} 2>>{log}
-        echo "[$(date '+%Y-%m-%d %H:%M:%S')] BAM conversion complete, sorting" >>{log}
+        minimap2 -ax map-ont {input.consensus} {input.reads} 2>>{log} | samtools view -b -o {output.bam} -
+        echo "[$(date '+%Y-%m-%d %H:%M:%S')] Alignment complete, sorting" >>{log}
 
         samtools sort {output.bam} -o {output.sorted_bam} 2>>{log}
         echo "[$(date '+%Y-%m-%d %H:%M:%S')] Sorting complete, indexing" >>{log}
@@ -60,7 +56,7 @@ rule parse_mpileup_ref_match:
     input:
         "report/{sample}_mpileup.txt",
     output:
-        "report/{sample}_pypileup.tsv",
+        "report/{sample}_pypileup.tsv.gz",
     log:
         logf="logs/aln/{sample}_parse_mpileup_ref_match.log",
     conda:
@@ -71,11 +67,11 @@ rule parse_mpileup_ref_match:
 
 rule plot_coverage:
     input:
-        "report/{sample}_pypileup.tsv",
+        "report/{sample}_pypileup.tsv.gz",
     output:
         report("report/{sample}_coverage.pdf", category="{sample}"),
         report("report/{sample}_mismatch_freq.pdf", category="{sample}"),
-        warnings_file="report/{sample}_qc_warnings.txt",  #warnings file storage
+        warnings_file=temp("report/{sample}_qc_warnings.txt"),  #warnings file storage 
         plot_flag=touch(".plot_{sample}.done"),  #flag file
     log:
         logf="logs/aln/{sample}_plot_coverage.log",

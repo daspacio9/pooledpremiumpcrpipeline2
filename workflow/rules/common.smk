@@ -95,7 +95,7 @@ def get_all_ab1_files(wildcards):
         checkpoints.chunk_pypileup.get(sample=sample).output[0]
         # Glob all chunks for this sample
         g_chunks = glob_wildcards(
-            f"report/pileup_chunks/{sample}_pypileup_chunk_{{chunk}}.tsv"
+            f"report/pileup_chunks/{sample}_pypileup_chunk_{{chunk}}.tsv.gz"
         )
         for chunk in g_chunks.chunk:
             ab1_files.append(f"ab1/.ab1_{sample}_{chunk}.done")

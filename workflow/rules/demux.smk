@@ -90,7 +90,7 @@ rule downsample_subreads:
     input:
         "demux/{sample}.fastq.gz",
     output:
-        "demux/{sample}_downsampled.fastq.gz",
+        temp("demux/{sample}_downsampled.fastq.gz"),
     log:
         "logs/demux/{sample}_downsample.log",
     conda:
@@ -130,7 +130,7 @@ checkpoint move_low_depth_subreads:
         csv="demux_stats.csv",
         filter_stats="logs/filter/filter_stats.csv",
     output:
-        out=(directory("demux/filtered_list")),
+        out=temp(directory("demux/filtered_list")),
     log:
         logf="logs/cutadapt/move_low_depth_subreads.log",
     conda:
