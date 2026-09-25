@@ -5,7 +5,6 @@ from datetime import datetime
 from snakemake.logging import logger
 import struct
 import math
-from snakemake.io import glob_wildcards
 
 def log_msg(logf, message):
     """Helper to write timestamped messages to log file"""
@@ -257,6 +256,4 @@ def generate_trace(df, seq):
         a[peak_idx-1] = g[peak_idx-1] = c[peak_idx-1] = t[peak_idx-1] = val_side
     return {'G': g, 'A': a, 'T': t, 'C': c}
 
-# g_chunks = glob_wildcards(
-#     f"report/pileup_chunks/{sample}_pypileup_chunk_{{chunk}}.tsv.gz"  # Add .gz
-# )
+
